@@ -54,7 +54,7 @@ const Index = () => {
       console.log("✅ Fetched data:", data);
       console.log("✅ Number of tools:", data.length);
       
-      // Add id field for frontend compatibility (API doesn't return id)
+      // Add id field for frontend compatibility (API doesn't return id).
       const toolsWithId = data.map((tool: any) => ({
         ...tool,
         id: tool.name // Use name as id since it's unique
