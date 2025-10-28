@@ -25,6 +25,8 @@ export interface Tool {
   tags?: string[];
 }
 
+// Categories are now fetched from API - no longer exported from here
+
 export const tools: any[] = [
   {
     id: "antivirus",
@@ -144,5 +146,3 @@ export const tools: any[] = [
     tags: ["database", "data", "rapporter", "udtræk", "analyse"]
   }
 ];
-
-export const categories = ["Alle", "Sikkerhed", "Kommunikation", "Samarbejde"];

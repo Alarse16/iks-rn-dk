@@ -1,23 +1,23 @@
 import { useState, useEffect } from "react";
 import { ToolCard } from "@/components/ToolCard";
 import { ToolModal } from "@/components/ToolModal";
-import { AddToolModal } from "@/components/AddToolModal";
+import { AdminModal } from "@/components/AdminModal";
 import { AuthModal } from "@/components/AuthModal";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Search, Plus } from "lucide-react";
-import { Tool, categories as initialCategories } from "@/data/tools";
+import { Tool } from "@/data/tools";
 import { useToast } from "@/hooks/use-toast";
 
 const API_BASE_URL = "https://10.253.129.201:4300";
 
 const Index = () => {
   const [tools, setTools] = useState<Tool[]>([]);
-  const [categories, setCategories] = useState<string[]>(initialCategories);
+  const [categories, setCategories] = useState<string[]>([]);
   const [selectedTool, setSelectedTool] = useState<Tool | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [isAdminModalOpen, setIsAdminModalOpen] = useState(false);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
@@ -26,6 +26,7 @@ const Index = () => {
 
   useEffect(() => {
     fetchTools();
+    fetchCategories();
   }, []);
 
   const fetchTools = async () => {
@@ -80,6 +81,28 @@ const Index = () => {
     }
   };
 
+  const fetchCategories = async () => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/kategorier`);
+      
+      if (!response.ok) {
+        throw new Error(`Failed to fetch categories: ${response.status}`);
+      }
+      
+      const data = await response.json();
+      // Add "Alle" as first option for frontend filtering
+      setCategories(data);
+      console.log("✅ Successfully loaded categories:", data);
+    } catch (error) {
+      console.error("❌ Error fetching categories:", error);
+      toast({
+        title: "Fejl",
+        description: "Kunne ikke hente kategorier. Kontakt IT-support hvis problemet fortsætter.",
+        variant: "destructive",
+      });
+    }
+  };
+
   const handleInfoClick = (tool: Tool) => {
     setSelectedTool(tool);
     setIsModalOpen(true);
@@ -89,8 +112,6 @@ const Index = () => {
     setIsModalOpen(false);
     setTimeout(() => setSelectedTool(null), 300);
   };
-
-  // REMOVED handleAddTool - no longer needed
 
   const handleDeleteTool = async (toolId: string) => {
     try {
@@ -121,19 +142,18 @@ const Index = () => {
     }
   };
 
-  const handleAddCategory = (newCategory: string) => {
-    if (!categories.includes(newCategory)) {
-      setCategories([...categories, newCategory]);
-    }
-  };
-
-  const handleOpenAddTool = () => {
+  const handleOpenAdmin = () => {
     setIsAuthModalOpen(true);
   };
 
   const handleAuthenticated = () => {
     setIsAuthModalOpen(false);
-    setIsAddModalOpen(true);
+    setIsAdminModalOpen(true);
+  };
+
+  const handleRefresh = () => {
+    fetchTools();
+    fetchCategories();
   };
 
   const filteredTools = tools.filter((tool) => {
@@ -165,9 +185,9 @@ const Index = () => {
               <p className="text-xl font-medium text-foreground/90">Infrastruktur & Klient Services</p>
             </div>
             <div className="flex items-center gap-3">
-              <Button onClick={handleOpenAddTool} size="lg" className="gap-2 shadow-[var(--shadow-card)]">
+              <Button onClick={handleOpenAdmin} size="lg" className="gap-2 shadow-[var(--shadow-card)]">
                 <Plus className="h-5 w-5" />
-                Opret nyt værktøj
+                Administrer værktøjer
               </Button>
               <ThemeToggle />
             </div>
@@ -194,7 +214,7 @@ const Index = () => {
 
           {/* Category Filters - Below Search */}
           <div className="flex gap-2 flex-wrap justify-center">
-            {categories.filter(c => c !== "Alle").map((category) => (
+            {categories.map((category) => (
               <Button
                 key={category}
                 variant={selectedCategories.includes(category) ? "default" : "outline"}
@@ -284,14 +304,12 @@ const Index = () => {
         onAuthenticate={handleAuthenticated}
       />
 
-      {/* Add Tool Modal - FIXED PROPS */}
-      <AddToolModal
-        isOpen={isAddModalOpen}
-        onClose={() => setIsAddModalOpen(false)}
-        categories={categories}
-        onAddCategory={handleAddCategory}
-        preselectedCategory={selectedCategories.length === 1 ? selectedCategories[0] : "Værktøjer"}
-        onToolCreated={fetchTools}
+      {/* Admin Modal */}
+      <AdminModal
+        isOpen={isAdminModalOpen}
+        onClose={() => setIsAdminModalOpen(false)}
+        onRefresh={handleRefresh}
+        availableCategories={categories}
       />
     </div>
   );
