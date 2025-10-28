@@ -27,8 +27,10 @@ export const ToolCard = ({ icon, name, description, link, category, tags, onInfo
   };
 
   // Determine if icon is base64/URL or Lucide icon name
-  const isBase64OrUrl = icon?.startsWith('data:') || icon?.startsWith('http');
-  const IconComponent = !isBase64OrUrl && icon
+  const isDataUrlOrHttp = icon?.startsWith('data:') || icon?.startsWith('http');
+  const isRawBase64 = icon && /^[A-Za-z0-9+/=]+$/.test(icon) && icon.length > 100;
+  const resolvedImgSrc = isDataUrlOrHttp ? icon : isRawBase64 ? `data:image/png;base64,${icon}` : undefined;
+  const IconComponent = !resolvedImgSrc && icon
     ? (Icons as any)[icon] || Icons.Wrench
     : Icons.Wrench;
 
@@ -48,8 +50,8 @@ export const ToolCard = ({ icon, name, description, link, category, tags, onInfo
       
       <div className="flex items-start gap-4 p-6 flex-1">
         <div className="flex-shrink-0 h-14 w-14 rounded-xl bg-primary shadow-[var(--shadow-card)] transition-all duration-300 group-hover:shadow-[var(--shadow-card-hover)] group-hover:scale-110 flex items-center justify-center overflow-hidden">
-          {isBase64OrUrl ? (
-            <img src={icon} alt={name} className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-110" />
+          {resolvedImgSrc ? (
+            <img src={resolvedImgSrc} alt={name} className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-110" />
           ) : (
             <IconComponent className="h-7 w-7 text-primary-foreground transition-transform duration-300 group-hover:scale-110" />
           )}
@@ -62,22 +64,16 @@ export const ToolCard = ({ icon, name, description, link, category, tags, onInfo
         </div>
       </div>
 
-      <div className="px-6 pb-4 pt-0 space-y-2">
-        {category && (
-          <div className="flex items-center gap-2">
-            <Badge variant="default" className="text-xs font-medium">
-              {category}
-            </Badge>
-          </div>
-        )}
-        {tags && tags.length > 0 && (
+      <div className="px-6 pb-4 pt-0">
+        {(category || (tags && tags.length > 0)) && (
           <div className="flex flex-wrap gap-1.5">
-            {tags.map((tag, index) => (
-              <Badge 
-                key={index} 
-                variant="secondary" 
-                className="text-xs font-normal"
-              >
+            {category && (
+              <Badge variant="secondary" className="text-xs font-medium">
+                {category}
+              </Badge>
+            )}
+            {tags?.map((tag, index) => (
+              <Badge key={index} variant="secondary" className="text-xs font-medium">
                 {tag}
               </Badge>
             ))}

@@ -185,7 +185,7 @@ const Admin = () => {
           const element = document.getElementById(fieldIds[i]);
           if (element) {
             element.scrollIntoView({ behavior: "smooth", block: "center" });
-            element.focus();
+            (element as HTMLElement).focus?.();
           }
           break;
         }
@@ -203,27 +203,36 @@ const Admin = () => {
     setIsSubmitting(true);
 
     try {
-      let finalIconUrl = toolForm.icon;
-      
+      // Build icon as raw base64 (no data: prefix) only if a file was uploaded or a raw base64 was provided
+      let iconBase64: string | undefined = undefined;
+
       if (iconFile) {
         const reader = new FileReader();
-        finalIconUrl = await new Promise<string>((resolve, reject) => {
+        const dataUrl = await new Promise<string>((resolve, reject) => {
           reader.onload = () => resolve(reader.result as string);
           reader.onerror = reject;
           reader.readAsDataURL(iconFile);
         });
+        // Strip the data: prefix
+        const commaIndex = dataUrl.indexOf(",");
+        iconBase64 = commaIndex !== -1 ? dataUrl.slice(commaIndex + 1) : dataUrl;
+      } else if (toolForm.icon && /^[A-Za-z0-9+/=]+$/.test(toolForm.icon) && toolForm.icon.length > 100) {
+        // User pasted raw base64
+        iconBase64 = toolForm.icon;
       }
 
-      const toolData = {
+      const toolData: Record<string, any> = {
         name: toolForm.name,
         short_description: toolForm.short_description,
         detailed_description: toolForm.detailed_description || undefined,
         documentation: toolForm.documentation || undefined,
         contact_info: toolForm.contact_info || undefined,
         link: toolForm.link,
-        category: toolForm.categories,
-        icon: finalIconUrl || undefined,
+        // Backend expects a single string for category
+        category: toolForm.categories[0],
       };
+
+      if (iconBase64) toolData.icon = iconBase64;
 
       const response = await fetch(`${API_BASE_URL}/tools`, {
         method: "POST",
@@ -340,7 +349,7 @@ const Admin = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background overflow-hidden">
       {/* Header */}
       <header className="border-b bg-card sticky top-0 z-50 shadow-[var(--shadow-card)]">
         <div className="container mx-auto px-6 py-4">
@@ -378,7 +387,7 @@ const Admin = () => {
       </header>
 
       {/* Main Content */}
-      <main className="container mx-auto px-6 py-6">
+      <main className="container mx-auto px-6 py-6 h-[calc(100vh-80px)] overflow-hidden">
         <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as "tools" | "categories")} className="w-full">
 
           {/* Tools Tab */}
