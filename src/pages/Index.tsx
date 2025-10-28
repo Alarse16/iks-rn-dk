@@ -150,7 +150,7 @@ const Index = () => {
         <div className="container mx-auto px-4 py-3">
           <div className="relative flex items-center justify-between gap-4">
             <div className="flex items-center p-2">
-              <img src="/rn-logo.svg" alt="Region Nordjylland" className="h-24 transition-transform duration-300 hover:scale-105" />
+              <img src="/rn-logo.svg" alt="Region Nordjylland" className="h-24" />
             </div>
             <div className="absolute left-1/2 -translate-x-1/2 text-center">
               <h1 className="text-4xl font-bold tracking-tight text-foreground">IKS.rn.dk</h1>
