@@ -163,20 +163,24 @@ export const AdminModal = ({ isOpen, onClose, onRefresh, availableCategories }: 
     }
   };
 
-  const validateForm = () => {
+  const computeMissingFields = () => {
     const missing: string[] = [];
     if (!toolForm.name.trim()) missing.push("Navn");
     if (!toolForm.short_description.trim()) missing.push("Kort beskrivelse");
     if (!toolForm.link.trim()) missing.push("Link");
     if (toolForm.categories.length === 0) missing.push("Kategori");
-    setMissingFields(missing);
-    return missing.length === 0;
+    return missing;
   };
+
+  const isFormValid = computeMissingFields().length === 0;
 
   const handleCreateTool = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!validateForm()) {
+    const missing = computeMissingFields();
+    setMissingFields(missing);
+    
+    if (missing.length > 0) {
       // Scroll to first empty required field
       const fieldIds = ["tool-name", "tool-short-desc", "tool-link"];
       const fieldChecks = [
@@ -543,16 +547,16 @@ export const AdminModal = ({ isOpen, onClose, onRefresh, availableCategories }: 
                           type="submit" 
                           className="w-full" 
                           disabled={isSubmitting}
-                          variant={!validateForm() ? "secondary" : "default"}
-                          onMouseEnter={() => validateForm()}
+                          variant={!isFormValid ? "secondary" : "default"}
+                          onMouseEnter={() => setMissingFields(computeMissingFields())}
                         >
                           {isSubmitting ? "Opretter..." : "Opret værktøj"}
                         </Button>
-                        {missingFields.length > 0 && (
+                        {!isFormValid && (
                           <div className="absolute left-0 right-0 -top-2 translate-y-[-100%] bg-popover text-popover-foreground px-3 py-2 rounded-md shadow-lg border opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-50">
                             <p className="text-sm font-medium mb-1">Manglende felter:</p>
                             <ul className="text-xs space-y-0.5">
-                              {missingFields.map((field) => (
+                              {computeMissingFields().map((field) => (
                                 <li key={field}>• {field}</li>
                               ))}
                             </ul>
