@@ -11,6 +11,7 @@ import { Trash2, Plus, Upload, X, ArrowLeft } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Tool } from "@/data/tools";
 import { ToolCard } from "@/components/ToolCard";
+import { ThemeToggle } from "@/components/ThemeToggle";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -32,6 +33,7 @@ const Admin = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
   const [itemToDelete, setItemToDelete] = useState<{ type: 'tool' | 'category', id: string, name: string } | null>(null);
+  const [activeTab, setActiveTab] = useState<"tools" | "categories">("tools");
 
   // Tool form state
   const [toolForm, setToolForm] = useState({
@@ -352,36 +354,39 @@ const Admin = () => {
                 <p className="text-sm text-muted-foreground">Administrer værktøjer og kategorier</p>
               </div>
             </div>
+            <div className="flex items-center gap-3">
+              <TabsList className="grid grid-cols-2">
+                <TabsTrigger value="tools" onClick={() => setActiveTab("tools")}>Værktøjer</TabsTrigger>
+                <TabsTrigger value="categories" onClick={() => setActiveTab("categories")}>Kategorier</TabsTrigger>
+              </TabsList>
+              <ThemeToggle />
+            </div>
           </div>
         </div>
       </header>
 
       {/* Main Content */}
-      <main className="container mx-auto px-6 py-8">
-        <Tabs defaultValue="tools" className="w-full">
-          <TabsList className="grid w-full max-w-md mx-auto grid-cols-2 mb-8">
-            <TabsTrigger value="tools">Værktøjer</TabsTrigger>
-            <TabsTrigger value="categories">Kategorier</TabsTrigger>
-          </TabsList>
+      <main className="container mx-auto px-6 py-6">
+        <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as "tools" | "categories")} className="w-full">
 
           {/* Tools Tab */}
-          <TabsContent value="tools" className="space-y-6">
-            <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
-              {/* Tool List */}
-              <div className="space-y-4">
-                <h2 className="text-xl font-semibold">Eksisterende værktøjer</h2>
-                <ScrollArea className="h-[calc(100vh-280px)] rounded-lg border bg-card p-6">
-                  <div className="space-y-3">
+          <TabsContent value="tools" className="space-y-0">
+            <div className="grid grid-cols-[320px,1fr] gap-6">
+              {/* Tool List - Compact */}
+              <div className="space-y-3">
+                <h2 className="text-lg font-semibold">Eksisterende værktøjer</h2>
+                <ScrollArea className="h-[calc(100vh-180px)] rounded-lg border bg-card p-4">
+                  <div className="space-y-2">
                     {tools.map((tool) => (
                       <div
                         key={tool.id}
-                        className="flex items-center justify-between p-4 rounded-lg border bg-background hover:bg-accent/50 transition-colors"
+                        className="flex items-center justify-between p-3 rounded-lg border bg-background hover:bg-accent/50 transition-colors"
                       >
                         <div className="flex-1 min-w-0">
-                          <p className="font-medium text-lg truncate">{tool.name}</p>
-                          <div className="flex gap-2 mt-2 flex-wrap">
+                          <p className="font-medium text-sm truncate">{tool.name}</p>
+                          <div className="flex gap-1 mt-1 flex-wrap">
                             {(Array.isArray(tool.category) ? tool.category : [tool.category]).map((cat) => (
-                              <Badge key={cat} variant="secondary">
+                              <Badge key={cat} variant="secondary" className="text-xs">
                                 {cat}
                               </Badge>
                             ))}
@@ -391,14 +396,14 @@ const Admin = () => {
                           variant="ghost"
                           size="icon"
                           onClick={() => confirmDelete('tool', tool.id, tool.name)}
-                          className="ml-3 text-destructive hover:text-destructive hover:bg-destructive/10"
+                          className="ml-2 h-8 w-8 text-destructive hover:text-destructive hover:bg-destructive/10"
                         >
-                          <Trash2 className="h-5 w-5" />
+                          <Trash2 className="h-4 w-4" />
                         </Button>
                       </div>
                     ))}
                     {tools.length === 0 && (
-                      <p className="text-muted-foreground text-center py-12 text-lg">
+                      <p className="text-muted-foreground text-center py-8 text-sm">
                         Ingen værktøjer endnu
                       </p>
                     )}
@@ -406,13 +411,15 @@ const Admin = () => {
                 </ScrollArea>
               </div>
 
-              {/* Create Tool Form */}
-              <div className="space-y-4">
-                <h2 className="text-xl font-semibold">Opret nyt værktøj</h2>
-                <ScrollArea className="h-[calc(100vh-280px)] rounded-lg border bg-card p-6">
-                  {/* Sticky Preview Card */}
-                  <div className="sticky top-0 z-10 bg-card/95 backdrop-blur-sm pb-6 mb-6 border-b">
-                    <p className="text-sm font-medium mb-3 text-muted-foreground">Forhåndsvisning:</p>
+              {/* Create Tool Form - Maximized */}
+              <div className="space-y-3">
+                <div className="flex items-start justify-between gap-6">
+                  <div className="flex-1">
+                    <h2 className="text-lg font-semibold mb-3">Opret nyt værktøj</h2>
+                  </div>
+                  {/* Preview Card at Top */}
+                  <div className="w-80 shrink-0">
+                    <p className="text-xs font-medium mb-2 text-muted-foreground">Forhåndsvisning:</p>
                     <ToolCard
                       icon={
                         iconFile 
@@ -427,45 +434,46 @@ const Admin = () => {
                       onInfoClick={() => {}}
                     />
                   </div>
-                  
-                  <form onSubmit={handleCreateTool} className="space-y-5">
+                </div>
+                
+                <ScrollArea className="h-[calc(100vh-260px)] rounded-lg border bg-card p-6">
+                  <form onSubmit={handleCreateTool} className="space-y-4">
                     <div className="space-y-2">
-                      <Label htmlFor="tool-name" className="text-base">Navn *</Label>
+                      <Label htmlFor="tool-name">Navn *</Label>
                       <Input
                         id="tool-name"
                         value={toolForm.name}
                         onChange={(e) => setToolForm({ ...toolForm, name: e.target.value })}
                         placeholder="Værktøjets navn"
                         required
-                        className="h-11"
                       />
                     </div>
 
                     <div className="space-y-2">
-                      <Label htmlFor="tool-short-desc" className="text-base">Kort beskrivelse *</Label>
+                      <Label htmlFor="tool-short-desc">Kort beskrivelse *</Label>
                       <Textarea
                         id="tool-short-desc"
                         value={toolForm.short_description}
                         onChange={(e) => setToolForm({ ...toolForm, short_description: e.target.value })}
                         placeholder="Kort beskrivelse af værktøjet"
                         required
-                        rows={3}
+                        rows={2}
                       />
                     </div>
 
                     <div className="space-y-2">
-                      <Label htmlFor="tool-detailed-desc" className="text-base">Detaljeret beskrivelse</Label>
+                      <Label htmlFor="tool-detailed-desc">Detaljeret beskrivelse</Label>
                       <Textarea
                         id="tool-detailed-desc"
                         value={toolForm.detailed_description}
                         onChange={(e) => setToolForm({ ...toolForm, detailed_description: e.target.value })}
                         placeholder="Detaljeret beskrivelse"
-                        rows={4}
+                        rows={3}
                       />
                     </div>
 
                     <div className="space-y-2" id="tool-category-section">
-                      <Label htmlFor="tool-category" className="text-base">Kategorier * (vælg en eller flere)</Label>
+                      <Label htmlFor="tool-category">Kategorier * (vælg en eller flere)</Label>
                       <div className="flex flex-wrap gap-2">
                         {categories.map((category) => (
                           <Button
@@ -489,44 +497,42 @@ const Admin = () => {
                     </div>
 
                     <div className="space-y-2">
-                      <Label htmlFor="tool-link" className="text-base">Link *</Label>
+                      <Label htmlFor="tool-link">Link *</Label>
                       <Input
                         id="tool-link"
                         value={toolForm.link}
                         onChange={(e) => setToolForm({ ...toolForm, link: e.target.value })}
                         placeholder="https://..."
                         required
-                        className="h-11"
                       />
                     </div>
 
                     <div className="space-y-2">
-                      <Label htmlFor="tool-docs" className="text-base">Dokumentation</Label>
+                      <Label htmlFor="tool-docs">Dokumentation</Label>
                       <Textarea
                         id="tool-docs"
                         value={toolForm.documentation}
                         onChange={(e) => setToolForm({ ...toolForm, documentation: e.target.value })}
                         placeholder="Hvordan bruges værktøjet?"
-                        rows={4}
+                        rows={3}
                       />
                     </div>
 
                     <div className="space-y-2">
-                      <Label htmlFor="tool-contact" className="text-base">Kontaktinfo</Label>
+                      <Label htmlFor="tool-contact">Kontaktinfo</Label>
                       <Input
                         id="tool-contact"
                         value={toolForm.contact_info}
                         onChange={(e) => setToolForm({ ...toolForm, contact_info: e.target.value })}
                         placeholder="support@example.com"
-                        className="h-11"
                       />
                     </div>
 
                     <div className="space-y-2">
-                      <Label className="text-base">Ikon</Label>
-                      <div className="space-y-3">
+                      <Label>Ikon</Label>
+                      <div className="space-y-2">
                         <div className="space-y-2">
-                          <Label htmlFor="tool-icon-name" className="text-sm text-muted-foreground">
+                          <Label htmlFor="tool-icon-name" className="text-xs text-muted-foreground">
                             Lucide ikon navn (f.eks. "Wrench", "Home", "Settings")
                           </Label>
                           <Input
@@ -534,7 +540,6 @@ const Admin = () => {
                             value={toolForm.icon}
                             onChange={(e) => setToolForm({ ...toolForm, icon: e.target.value })}
                             placeholder="Wrench"
-                            className="h-11"
                           />
                         </div>
                         <div className="relative">
@@ -547,9 +552,9 @@ const Admin = () => {
                         </div>
                         <div className="flex items-center gap-2">
                           <label className="flex-1 cursor-pointer">
-                            <div className="flex items-center gap-2 h-12 w-full rounded-lg border-2 border-input bg-background px-4 py-2 shadow-[var(--shadow-sm)] hover:border-primary transition-colors">
-                              <Upload className="h-5 w-5 text-muted-foreground" />
-                              <span className="text-muted-foreground">
+                            <div className="flex items-center gap-2 h-10 w-full rounded-lg border-2 border-input bg-background px-3 py-2 text-sm shadow-[var(--shadow-sm)] hover:border-primary transition-colors">
+                              <Upload className="h-4 w-4 text-muted-foreground" />
+                              <span className="text-muted-foreground text-sm">
                                 {iconFile ? iconFile.name : "Upload billede"}
                               </span>
                             </div>
@@ -567,17 +572,17 @@ const Admin = () => {
                               size="icon"
                               onClick={() => setIconFile(null)}
                             >
-                              <X className="h-5 w-5" />
+                              <X className="h-4 w-4" />
                             </Button>
                           )}
                         </div>
                       </div>
                     </div>
 
-                    <div className="relative group pt-2">
+                    <div className="relative group pt-1">
                       <Button 
                         type="submit" 
-                        className="w-full h-12 text-base" 
+                        className="w-full" 
                         disabled={isSubmitting}
                         variant={!isFormValid ? "secondary" : "default"}
                         onMouseEnter={() => setMissingFields(computeMissingFields())}
@@ -585,9 +590,9 @@ const Admin = () => {
                         {isSubmitting ? "Opretter..." : "Opret værktøj"}
                       </Button>
                       {!isFormValid && (
-                        <div className="absolute left-0 right-0 -top-2 translate-y-[-100%] bg-popover text-popover-foreground px-4 py-3 rounded-md shadow-lg border opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-50">
-                          <p className="text-sm font-medium mb-1">Manglende felter:</p>
-                          <ul className="text-sm space-y-1">
+                        <div className="absolute left-0 right-0 -top-2 translate-y-[-100%] bg-popover text-popover-foreground px-3 py-2 rounded-md shadow-lg border opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-50">
+                          <p className="text-xs font-medium mb-1">Manglende felter:</p>
+                          <ul className="text-xs space-y-0.5">
                             {computeMissingFields().map((field) => (
                               <li key={field}>• {field}</li>
                             ))}
@@ -602,31 +607,31 @@ const Admin = () => {
           </TabsContent>
 
           {/* Categories Tab */}
-          <TabsContent value="categories" className="space-y-6">
+          <TabsContent value="categories" className="space-y-0">
             <div className="grid grid-cols-1 xl:grid-cols-2 gap-8 max-w-6xl mx-auto">
               {/* Category List */}
-              <div className="space-y-4">
-                <h2 className="text-xl font-semibold">Eksisterende kategorier</h2>
-                <ScrollArea className="h-[calc(100vh-280px)] rounded-lg border bg-card p-6">
-                  <div className="space-y-3">
+              <div className="space-y-3">
+                <h2 className="text-lg font-semibold">Eksisterende kategorier</h2>
+                <ScrollArea className="h-[calc(100vh-180px)] rounded-lg border bg-card p-4">
+                  <div className="space-y-2">
                     {categories.map((category) => (
                       <div
                         key={category}
-                        className="flex items-center justify-between p-4 rounded-lg border bg-background hover:bg-accent/50 transition-colors"
+                        className="flex items-center justify-between p-3 rounded-lg border bg-background hover:bg-accent/50 transition-colors"
                       >
-                        <p className="font-medium text-lg">{category}</p>
+                        <p className="font-medium">{category}</p>
                         <Button
                           variant="ghost"
                           size="icon"
                           onClick={() => confirmDelete('category', category, category)}
-                          className="text-destructive hover:text-destructive hover:bg-destructive/10"
+                          className="text-destructive hover:text-destructive hover:bg-destructive/10 h-8 w-8"
                         >
-                          <Trash2 className="h-5 w-5" />
+                          <Trash2 className="h-4 w-4" />
                         </Button>
                       </div>
                     ))}
                     {categories.length === 0 && (
-                      <p className="text-muted-foreground text-center py-12 text-lg">
+                      <p className="text-muted-foreground text-center py-8 text-sm">
                         Ingen kategorier endnu
                       </p>
                     )}
@@ -635,24 +640,23 @@ const Admin = () => {
               </div>
 
               {/* Create Category Form */}
-              <div className="space-y-4">
-                <h2 className="text-xl font-semibold">Opret ny kategori</h2>
+              <div className="space-y-3">
+                <h2 className="text-lg font-semibold">Opret ny kategori</h2>
                 <div className="rounded-lg border bg-card p-6">
-                  <form onSubmit={handleCreateCategory} className="space-y-5">
+                  <form onSubmit={handleCreateCategory} className="space-y-4">
                     <div className="space-y-2">
-                      <Label htmlFor="category-name" className="text-base">Kategorinavn *</Label>
+                      <Label htmlFor="category-name">Kategorinavn *</Label>
                       <Input
                         id="category-name"
                         value={newCategoryName}
                         onChange={(e) => setNewCategoryName(e.target.value)}
                         placeholder="Indtast kategorinavn"
                         required
-                        className="h-11"
                       />
                     </div>
 
-                    <Button type="submit" className="w-full h-12 text-base">
-                      <Plus className="h-5 w-5 mr-2" />
+                    <Button type="submit" className="w-full">
+                      <Plus className="h-4 w-4 mr-2" />
                       Opret kategori
                     </Button>
                   </form>
