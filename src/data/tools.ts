@@ -22,6 +22,7 @@ export interface Tool {
   icon?: string;
   link: string;
   category: string;
+  tags?: string[];
 }
 
 export const tools: any[] = [
@@ -35,7 +36,8 @@ export const tools: any[] = [
     contact: "IT-Sikkerhed: it-sikkerhed@rn.dk eller telefon 9932 1111",
     icon: Shield,
     link: "#",
-    category: "Sikkerhed"
+    category: "Sikkerhed",
+    tags: ["virus", "malware", "sikkerhed", "beskyttelse", "scanning"]
   },
   {
     id: "email",
@@ -47,7 +49,8 @@ export const tools: any[] = [
     contact: "Email Support: email-support@rn.dk eller telefon 9932 1122",
     icon: Mail,
     link: "https://outlook.office.com",
-    category: "Kommunikation"
+    category: "Kommunikation",
+    tags: ["email", "mail", "kalender", "outlook", "kontakter"]
   },
   {
     id: "backup",
@@ -59,7 +62,8 @@ export const tools: any[] = [
     contact: "Backup Support: backup-support@rn.dk eller telefon 9932 1133",
     icon: HardDrive,
     link: "#",
-    category: "Sikkerhed"
+    category: "Sikkerhed",
+    tags: ["backup", "sikkerhedskopi", "gendannelse", "filer", "data"]
   },
   {
     id: "teams",
@@ -71,7 +75,8 @@ export const tools: any[] = [
     contact: "Teams Support: teams-support@rn.dk eller telefon 9932 1144",
     icon: Users,
     link: "https://teams.microsoft.com",
-    category: "Kommunikation"
+    category: "Kommunikation",
+    tags: ["teams", "møder", "video", "chat", "samarbejde"]
   },
   {
     id: "vpn",
@@ -83,7 +88,8 @@ export const tools: any[] = [
     contact: "VPN Support: vpn-support@rn.dk eller telefon 9932 1155",
     icon: Lock,
     link: "#",
-    category: "Sikkerhed"
+    category: "Sikkerhed",
+    tags: ["vpn", "hjemmearbejde", "ekstern adgang", "sikkerhed", "netværk"]
   },
   {
     id: "sharepoint",
@@ -95,7 +101,8 @@ export const tools: any[] = [
     contact: "SharePoint Support: sharepoint-support@rn.dk eller telefon 9932 1166",
     icon: FileText,
     link: "https://sharepoint.rn.dk",
-    category: "Samarbejde"
+    category: "Samarbejde",
+    tags: ["sharepoint", "dokumenter", "deling", "samarbejde", "filer"]
   },
   {
     id: "onedrive",
@@ -107,7 +114,8 @@ export const tools: any[] = [
     contact: "OneDrive Support: onedrive-support@rn.dk eller telefon 9932 1177",
     icon: Cloud,
     link: "https://onedrive.live.com",
-    category: "Samarbejde"
+    category: "Samarbejde",
+    tags: ["onedrive", "cloud", "synkronisering", "lagerplads", "filer"]
   },
   {
     id: "software",
@@ -119,7 +127,8 @@ export const tools: any[] = [
     contact: "Software Support: software-support@rn.dk eller telefon 9932 1188",
     icon: Laptop,
     link: "#",
-    category: "Værktøjer"
+    category: "Værktøjer",
+    tags: ["software", "programmer", "installation", "opdateringer", "apps"]
   },
   {
     id: "database",
@@ -127,11 +136,12 @@ export const tools: any[] = [
     description: "Sikker adgang til Region Nordjyllands databaser til dataanalyse og rapportering.",
     detailedDescription: "Database Adgang giver autoriserede medarbejdere sikker adgang til Region Nordjyllands forskellige databaser til dataanalyse, rapportering og udtræk. Systemet sikrer, at kun autoriserede personer kan tilgå følsomme data og logger al aktivitet.\n\nFordele:\n• Sikker adgang til autoriserede databaser\n• Avancerede søge- og filtreringsmuligheder\n• Eksport til Excel og andre formater\n• Standardrapporter og mulighed for egne udtræk\n• Fuld audit trail af dataadgang\n• Overholdelse af GDPR og datasikkerhed",
     targetAudience: "Autoriserede medarbejdere med databehov",
-    documentation: "ADGANG TIL DATABASER\n\nFå adgang:\n1. Få godkendelse fra din leder\n2. Udfyld adgangsformular på intranettet\n3. Specificer hvilke databaser du har brug for\n4. Angiv formålet med adgangen\n5. Vent på godkendelse fra IT-sikkerhed\n6. Du modtager loginoplysninger via sikker mail\n\nFørste login:\n1. Gå til database.rn.dk\n2. Log ind med modtagne credentials\n3. Skift dit password ved første login\n4. Accepter vilkår og betingelser\n5. Gennemfør obligatorisk GDPR-træning\n\nBRUG AF DATABASEN\n\nSøgning:\n1. Vælg den relevante database fra menuen\n2. Indtast søgekriterier\n3. Klik 'Søg'\n4. Resultaterne vises i tabellen\n\nFiltrering:\n1. Brug filterfunktionerne i toppen\n2. Vælg datointerval, afdeling, etc.\n3. Anvend flere filtre samtidigt\n4. Klik 'Anvend filtre'\n\nEKSPORT AF DATA\n\nTil Excel:\n1. Udfør din søgning\n2. Klik på 'Eksporter'\n3. Vælg 'Excel format'\n4. Vælg hvilke kolonner der skal medtages\n5. Klik 'Download'\n6. Filen downloades til din computer\n\nTil CSV:\n1. Følg samme procedure som Excel\n2. Vælg 'CSV format' i stedet\n3. Vælg separator (komma, semikolon)\n4. Download filen\n\nRAPPORTER\n\nStandardrapporter:\n1. Gå til 'Rapporter' menuen\n2. Vælg rapport type\n3. Indtast parametre (datoer, afdeling, etc.)\n4. Klik 'Generér rapport'\n5. Rapporten vises eller downloades\n\nEgne rapporter:\n1. Klik på 'Opret rapport'\n2. Vælg datakilde\n3. Vælg kolonner der skal inkluderes\n4. Definer filtre og sortering\n5. Gem rapporten til senere brug\n\nSIKKERHED OG GDPR\n\nVigtigt at huske:\n• Log altid ud når du er færdig\n• Del ALDRIG dine loginoplysninger\n• Download kun data du har tilladelse til\n• Gem aldrig følsomme data på usikre placeringer\n• Rapporter øjeblikkeligt hvis du opdager unormal aktivitet\n\nGDPR compliance:\n• Anvend kun data til godkendte formål\n• Slet data når det ikke længere er nødvendigt\n• Anonymiser data hvor det er muligt\n• Log al databehandling i henhold til retningslinjer\n• Kontakt GDPR-ansvarlig ved spørgsmål\n\nAudit trail:\n• Al din aktivitet logges automatisk\n• Du kan se din egen aktivitetslog under 'Min aktivitet'\n• Loggen inkluderer søgninger, eksporter og rapporter\n• Data opbevares i 2 år af sikkerhedsmæssige årsager",
+    documentation: "ANMODNING OM DATABASE ADGANG\n\nAdgang til databaser kræver godkendelse:\n1. Udfyld anmodningsformular på intranettet\n2. Angiv hvilke databaser du har brug for adgang til\n3. Begrund dit behov (GDPR krav)\n4. Få godkendelse fra din leder\n5. Send til IT-sikkerhed for behandling\n6. Du modtager svar inden for 3 arbejdsdage\n\nFØRSTE GANGS LOGIN\n\n1. Åbn database-portalen: db.rn.dk\n2. Log ind med dit brugernavn\n3. Gennemfør obligatorisk sikkerhedsinstruktion\n4. Accepter vilkår for dataanvendelse\n5. Du har nu adgang til godkendte databaser\n\nDATAUDTRÆK\n\nStandardrapporter:\n1. Vælg 'Rapporter' i menuen\n2. Find den ønskede rapport i listen\n3. Vælg tidsperiode og filtre\n4. Klik 'Generér rapport'\n5. Download som Excel eller PDF\n\nBrugerdefineret udtræk:\n1. Vælg 'Nyt udtræk' i menuen\n2. Vælg database og tabeller\n3. Marker de felter du ønsker\n4. Tilføj filtre efter behov\n5. Preview resultat\n6. Eksportér data\n\nDATA SIKKERHED\n\nVIGTIGT - Følg altid disse regler:\n• Del ALDRIG data med uautoriserede personer\n• Gem data kun på godkendte lokationer (OneDrive/SharePoint)\n• Kryptér filer med personhenførbare data\n• Slet data når det ikke længere er nødvendigt\n• Rapportér mistænkelig aktivitet til IT-sikkerhed\n\nGDPR COMPLIANCE\n\nAl dataanvendelse skal overholde GDPR:\n• Log kun data du har behov for\n• Begræns dataadgang til nødvendige felter\n• Dokumentér formålet med dataudtræk\n• Slet data efter brug\n• Underret DPO ved sikkerhedsbrud\n\nEKSPORT BEGRÆNSNINGER\n\nMaksimum antal rækker per udtræk: 10.000\nFor større udtræk:\n1. Kontakt database-administratoren\n2. Begrund behovet for stort udtræk\n3. Udtræk genereres og stilles til rådighed sikkert\n\nREVISIONS LOG\n\nAl adgang til databaser logges:\n• Hvem har tilgået data\n• Hvornår data blev tilgået\n• Hvilke data der blev set/eksporteret\n• IP-adresse og computer\n\nFEJLFINDING\n\nKan ikke logge ind:\n1. Kontroller at du har aktiv database-adgang\n2. Prøv at nulstille dit kodeord\n3. Kontakt IT-support hvis problemet fortsætter\n\nManglende data:\n• Data kan være klassificeret højere end din adgang\n• Kontakt database-administratoren for information\n\nLangsom respons:\n• Undgå store udtræk i dagtimerne\n• Brug filtre til at begrænse resultater\n• Kontakt support ved vedvarende problemer",
     contact: "Database Support: database-support@rn.dk eller telefon 9932 1199",
     icon: Database,
     link: "#",
-    category: "Værktøjer"
+    category: "Værktøjer",
+    tags: ["database", "data", "rapporter", "udtræk", "analyse"]
   }
 ];
 

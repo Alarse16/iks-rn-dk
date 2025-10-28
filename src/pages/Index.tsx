@@ -220,6 +220,7 @@ const Index = () => {
                 name={tool.name}
                 description={tool.short_description}
                 link={tool.link}
+                tags={tool.tags}
                 onInfoClick={() => handleInfoClick(tool)}
               />
             ))}
