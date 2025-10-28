@@ -43,17 +43,15 @@ export const AdminModal = ({ isOpen, onClose, onRefresh, availableCategories }: 
     name: "",
     short_description: "",
     detailed_description: "",
-    target_audience: "",
     documentation: "",
     contact_info: "",
     link: "",
-    category: "",
-    tags: "",
+    categories: [] as string[],
     icon: "",
   });
-  const [customIconUrl, setCustomIconUrl] = useState("");
   const [iconFile, setIconFile] = useState<File | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [missingFields, setMissingFields] = useState<string[]>([]);
 
   // Category form state
   const [newCategoryName, setNewCategoryName] = useState("");
@@ -128,7 +126,10 @@ export const AdminModal = ({ isOpen, onClose, onRefresh, availableCategories }: 
 
   const handleDeleteCategory = async (categoryName: string) => {
     // Check if any tools use this category
-    const toolsUsingCategory = tools.filter(tool => tool.category === categoryName);
+    const toolsUsingCategory = tools.filter(tool => {
+      const categories = Array.isArray(tool.category) ? tool.category : [tool.category];
+      return categories.includes(categoryName);
+    });
     if (toolsUsingCategory.length > 0) {
       toast({
         title: "Kan ikke slette kategori",
@@ -162,12 +163,53 @@ export const AdminModal = ({ isOpen, onClose, onRefresh, availableCategories }: 
     }
   };
 
+  const validateForm = () => {
+    const missing: string[] = [];
+    if (!toolForm.name.trim()) missing.push("Navn");
+    if (!toolForm.short_description.trim()) missing.push("Kort beskrivelse");
+    if (!toolForm.link.trim()) missing.push("Link");
+    if (toolForm.categories.length === 0) missing.push("Kategori");
+    setMissingFields(missing);
+    return missing.length === 0;
+  };
+
   const handleCreateTool = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    if (!validateForm()) {
+      // Scroll to first empty required field
+      const fieldIds = ["tool-name", "tool-short-desc", "tool-link"];
+      const fieldChecks = [
+        !toolForm.name.trim(),
+        !toolForm.short_description.trim(),
+        !toolForm.link.trim(),
+      ];
+      
+      for (let i = 0; i < fieldChecks.length; i++) {
+        if (fieldChecks[i]) {
+          const element = document.getElementById(fieldIds[i]);
+          if (element) {
+            element.scrollIntoView({ behavior: "smooth", block: "center" });
+            element.focus();
+          }
+          break;
+        }
+      }
+      
+      // Check categories last
+      if (toolForm.categories.length === 0) {
+        const categorySection = document.getElementById("tool-category-section");
+        if (categorySection) {
+          categorySection.scrollIntoView({ behavior: "smooth", block: "center" });
+        }
+      }
+      return;
+    }
+
     setIsSubmitting(true);
 
     try {
-      let finalIconUrl = customIconUrl;
+      let finalIconUrl = "";
 
       if (iconFile) {
         const formData = new FormData();
@@ -188,12 +230,10 @@ export const AdminModal = ({ isOpen, onClose, onRefresh, availableCategories }: 
         name: toolForm.name,
         short_description: toolForm.short_description,
         detailed_description: toolForm.detailed_description || undefined,
-        target_audience: toolForm.target_audience || undefined,
         documentation: toolForm.documentation || undefined,
         contact_info: toolForm.contact_info || undefined,
         link: toolForm.link,
-        category: toolForm.category,
-        tags: toolForm.tags ? toolForm.tags.split(",").map((t) => t.trim()) : [],
+        category: toolForm.categories,
         icon: finalIconUrl || toolForm.icon || undefined,
       };
 
@@ -217,16 +257,14 @@ export const AdminModal = ({ isOpen, onClose, onRefresh, availableCategories }: 
         name: "",
         short_description: "",
         detailed_description: "",
-        target_audience: "",
         documentation: "",
         contact_info: "",
         link: "",
-        category: "",
-        tags: "",
+        categories: [],
         icon: "",
       });
-      setCustomIconUrl("");
       setIconFile(null);
+      setMissingFields([]);
 
       fetchTools();
       onRefresh();
@@ -295,7 +333,6 @@ export const AdminModal = ({ isOpen, onClose, onRefresh, availableCategories }: 
         return;
       }
       setIconFile(file);
-      setCustomIconUrl("");
     }
   };
 
@@ -349,9 +386,13 @@ export const AdminModal = ({ isOpen, onClose, onRefresh, availableCategories }: 
                         >
                           <div className="flex-1 min-w-0">
                             <p className="font-medium truncate">{tool.name}</p>
-                            <Badge variant="secondary" className="mt-1">
-                              {tool.category}
-                            </Badge>
+                            <div className="flex gap-1 mt-1 flex-wrap">
+                              {(Array.isArray(tool.category) ? tool.category : [tool.category]).map((cat) => (
+                                <Badge key={cat} variant="secondary" className="text-xs">
+                                  {cat}
+                                </Badge>
+                              ))}
+                            </div>
                           </div>
                           <Button
                             variant="ghost"
@@ -411,16 +452,23 @@ export const AdminModal = ({ isOpen, onClose, onRefresh, availableCategories }: 
                         />
                       </div>
 
-                      <div className="space-y-2">
-                        <Label htmlFor="tool-category">Kategori *</Label>
+                      <div className="space-y-2" id="tool-category-section">
+                        <Label htmlFor="tool-category">Kategorier * (vælg en eller flere)</Label>
                         <div className="flex flex-wrap gap-2">
                           {categories.map((category) => (
                             <Button
                               key={category}
                               type="button"
-                              variant={toolForm.category === category ? "default" : "outline"}
+                              variant={toolForm.categories.includes(category) ? "default" : "outline"}
                               size="sm"
-                              onClick={() => setToolForm({ ...toolForm, category })}
+                              onClick={() => {
+                                setToolForm({
+                                  ...toolForm,
+                                  categories: toolForm.categories.includes(category)
+                                    ? toolForm.categories.filter(c => c !== category)
+                                    : [...toolForm.categories, category]
+                                });
+                              }}
                             >
                               {category}
                             </Button>
@@ -436,16 +484,6 @@ export const AdminModal = ({ isOpen, onClose, onRefresh, availableCategories }: 
                           onChange={(e) => setToolForm({ ...toolForm, link: e.target.value })}
                           placeholder="https://..."
                           required
-                        />
-                      </div>
-
-                      <div className="space-y-2">
-                        <Label htmlFor="tool-audience">Målgruppe</Label>
-                        <Input
-                          id="tool-audience"
-                          value={toolForm.target_audience}
-                          onChange={(e) => setToolForm({ ...toolForm, target_audience: e.target.value })}
-                          placeholder="Hvem er værktøjet til?"
                         />
                       </div>
 
@@ -471,54 +509,56 @@ export const AdminModal = ({ isOpen, onClose, onRefresh, availableCategories }: 
                       </div>
 
                       <div className="space-y-2">
-                        <Label htmlFor="tool-tags">Tags (kommasepareret)</Label>
-                        <Input
-                          id="tool-tags"
-                          value={toolForm.tags}
-                          onChange={(e) => setToolForm({ ...toolForm, tags: e.target.value })}
-                          placeholder="tag1, tag2, tag3"
-                        />
-                      </div>
-
-                      <div className="space-y-2">
-                        <Label>Brugerdefineret ikon</Label>
-                        <div className="space-y-2">
-                          <div className="flex gap-2">
-                            <Input
+                        <Label>Ikon</Label>
+                        <div className="flex items-center gap-2">
+                          <label className="flex-1 cursor-pointer">
+                            <div className="flex items-center gap-2 h-11 w-full rounded-lg border-2 border-input bg-background px-4 py-2 text-sm shadow-[var(--shadow-sm)] hover:border-primary transition-colors">
+                              <Upload className="h-4 w-4 text-muted-foreground" />
+                              <span className="text-muted-foreground">
+                                {iconFile ? iconFile.name : "Vælg fil fra computer"}
+                              </span>
+                            </div>
+                            <input
                               type="file"
                               accept="image/*"
                               onChange={handleImageUpload}
-                              className="flex-1"
+                              className="hidden"
                             />
-                            {iconFile && (
-                              <Button
-                                type="button"
-                                variant="ghost"
-                                size="icon"
-                                onClick={() => setIconFile(null)}
-                              >
-                                <X className="h-4 w-4" />
-                              </Button>
-                            )}
-                          </div>
-                          <p className="text-xs text-muted-foreground">
-                            Eller indtast URL til ikon
-                          </p>
-                          <Input
-                            value={customIconUrl}
-                            onChange={(e) => {
-                              setCustomIconUrl(e.target.value);
-                              setIconFile(null);
-                            }}
-                            placeholder="https://example.com/icon.png"
-                            disabled={!!iconFile}
-                          />
+                          </label>
+                          {iconFile && (
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              size="icon"
+                              onClick={() => setIconFile(null)}
+                            >
+                              <X className="h-4 w-4" />
+                            </Button>
+                          )}
                         </div>
                       </div>
 
-                      <Button type="submit" className="w-full" disabled={isSubmitting}>
-                        {isSubmitting ? "Opretter..." : "Opret værktøj"}
-                      </Button>
+                      <div className="relative group">
+                        <Button 
+                          type="submit" 
+                          className="w-full" 
+                          disabled={isSubmitting}
+                          variant={!validateForm() ? "secondary" : "default"}
+                          onMouseEnter={() => validateForm()}
+                        >
+                          {isSubmitting ? "Opretter..." : "Opret værktøj"}
+                        </Button>
+                        {missingFields.length > 0 && (
+                          <div className="absolute left-0 right-0 -top-2 translate-y-[-100%] bg-popover text-popover-foreground px-3 py-2 rounded-md shadow-lg border opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-50">
+                            <p className="text-sm font-medium mb-1">Manglende felter:</p>
+                            <ul className="text-xs space-y-0.5">
+                              {missingFields.map((field) => (
+                                <li key={field}>• {field}</li>
+                              ))}
+                            </ul>
+                          </div>
+                        )}
+                      </div>
                     </form>
                   </ScrollArea>
                 </div>

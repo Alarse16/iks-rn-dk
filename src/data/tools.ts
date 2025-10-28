@@ -21,7 +21,7 @@ export interface Tool {
   contact_info?: string;
   icon?: string;
   link: string;
-  category: string;
+  category: string | string[]; // Support both single and multiple categories
   tags?: string[];
 }
 

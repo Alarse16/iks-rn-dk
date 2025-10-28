@@ -159,7 +159,11 @@ const Index = () => {
   const filteredTools = tools.filter((tool) => {
     const matchesSearch = tool.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       tool.short_description.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesCategory = selectedCategories.length === 0 || selectedCategories.includes(tool.category);
+    
+    const toolCategories = Array.isArray(tool.category) ? tool.category : [tool.category];
+    const matchesCategory = selectedCategories.length === 0 || 
+      selectedCategories.some(cat => toolCategories.includes(cat));
+    
     return matchesSearch && matchesCategory;
   });
 
@@ -225,16 +229,6 @@ const Index = () => {
                 {category}
               </Button>
             ))}
-            {selectedCategories.length > 0 && (
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => setSelectedCategories([])}
-                className="whitespace-nowrap"
-              >
-                Ryd filtre
-              </Button>
-            )}
           </div>
         </div>
       </header>
@@ -258,7 +252,7 @@ const Index = () => {
                 name={tool.name}
                 description={tool.short_description}
                 link={tool.link}
-                category={tool.category}
+                category={Array.isArray(tool.category) ? tool.category[0] : tool.category}
                 tags={tool.tags}
                 onInfoClick={() => handleInfoClick(tool)}
               />
