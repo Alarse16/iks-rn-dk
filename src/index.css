@@ -1,0 +1,175 @@
+@import url('https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@300;400;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
+All colors MUST be HSL.
+*/
+
+@layer base {
+  :root {
+    --background: 210 40% 98%;
+    --foreground: 215 25% 20%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 215 25% 20%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 215 25% 20%;
+
+    --primary: 210 85% 45%;
+    --primary-foreground: 0 0% 100%;
+    --primary-glow: 210 90% 60%;
+
+    --secondary: 210 50% 96%;
+    --secondary-foreground: 215 25% 20%;
+
+    --muted: 210 40% 96%;
+    --muted-foreground: 215 16% 47%;
+
+    --accent: 210 100% 94%;
+    --accent-foreground: 210 85% 40%;
+
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 214 32% 91%;
+    --input: 214 32% 91%;
+    --ring: 210 85% 45%;
+
+    --radius: 0.75rem;
+
+    /* Region Nordjylland specific tokens */
+    --region-blue: 210 85% 45%;
+    --region-blue-light: 210 95% 88%;
+    --region-blue-dark: 210 90% 35%;
+    
+    /* Beautiful Gradients */
+    --gradient-primary: linear-gradient(135deg, hsl(210 85% 45%) 0%, hsl(210 90% 60%) 100%);
+    --gradient-subtle: linear-gradient(180deg, hsl(0 0% 100%) 0%, hsl(210 50% 98%) 100%);
+    --gradient-card: linear-gradient(135deg, hsl(0 0% 100%) 0%, hsl(210 40% 99%) 100%);
+    --gradient-hero: linear-gradient(180deg, hsl(210 100% 96%) 0%, hsl(210 100% 98%) 50%, hsl(0 0% 100%) 100%);
+    
+    /* Premium Shadows */
+    --shadow-sm: 0 1px 2px 0 hsl(210 85% 45% / 0.05);
+    --shadow-card: 0 2px 12px -3px hsl(210 85% 45% / 0.08), 0 1px 4px -1px hsl(210 85% 45% / 0.04);
+    --shadow-card-hover: 0 12px 32px -8px hsl(210 85% 45% / 0.15), 0 4px 12px -2px hsl(210 85% 45% / 0.08);
+    --shadow-modal: 0 24px 64px -12px hsl(215 25% 20% / 0.25), 0 8px 24px -4px hsl(215 25% 20% / 0.12);
+    --shadow-glow: 0 0 24px hsl(210 90% 60% / 0.3);
+    --shadow-input: 0 0 0 0 hsl(210 85% 45% / 0);
+    --shadow-input-focus: 0 0 0 3px hsl(210 85% 45% / 0.1);
+
+    /* Transitions */
+    --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-bounce: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+
+    --sidebar-background: 0 0% 98%;
+    --sidebar-foreground: 240 5.3% 26.1%;
+    --sidebar-primary: 240 5.9% 10%;
+    --sidebar-primary-foreground: 0 0% 98%;
+    --sidebar-accent: 240 4.8% 95.9%;
+    --sidebar-accent-foreground: 240 5.9% 10%;
+    --sidebar-border: 220 13% 91%;
+    --sidebar-ring: 217.2 91.2% 59.8%;
+  }
+
+  .dark {
+    --background: 215 30% 11%;
+    --foreground: 210 40% 98%;
+
+    --card: 215 28% 15%;
+    --card-foreground: 210 40% 98%;
+
+    --popover: 215 28% 15%;
+    --popover-foreground: 210 40% 98%;
+
+    --primary: 210 85% 58%;
+    --primary-foreground: 215 30% 11%;
+    --primary-glow: 210 90% 70%;
+
+    --secondary: 215 25% 20%;
+    --secondary-foreground: 210 40% 98%;
+
+    --muted: 215 25% 20%;
+    --muted-foreground: 215 20% 65%;
+
+    --accent: 215 25% 22%;
+    --accent-foreground: 210 85% 58%;
+
+    --destructive: 0 63% 31%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 215 25% 20%;
+    --input: 215 25% 20%;
+    --ring: 210 85% 58%;
+
+    /* Region Nordjylland dark mode */
+    --region-blue: 210 85% 58%;
+    --region-blue-light: 210 60% 25%;
+    --region-blue-dark: 210 90% 50%;
+    
+    /* Beautiful Gradients - Dark */
+    --gradient-primary: linear-gradient(135deg, hsl(210 85% 58%) 0%, hsl(210 90% 70%) 100%);
+    --gradient-subtle: linear-gradient(180deg, hsl(215 28% 15%) 0%, hsl(215 30% 11%) 100%);
+    --gradient-card: linear-gradient(135deg, hsl(215 28% 15%) 0%, hsl(215 28% 17%) 100%);
+    --gradient-hero: linear-gradient(180deg, hsl(215 30% 14%) 0%, hsl(215 30% 12%) 50%, hsl(215 30% 11%) 100%);
+    
+    /* Premium Shadows - Dark */
+    --shadow-sm: 0 1px 2px 0 hsl(0 0% 0% / 0.2);
+    --shadow-card: 0 2px 12px -3px hsl(0 0% 0% / 0.3), 0 1px 4px -1px hsl(210 85% 58% / 0.05);
+    --shadow-card-hover: 0 12px 32px -8px hsl(210 85% 58% / 0.25), 0 4px 12px -2px hsl(210 85% 58% / 0.1);
+    --shadow-modal: 0 24px 64px -12px hsl(0 0% 0% / 0.5), 0 8px 24px -4px hsl(0 0% 0% / 0.3);
+    --shadow-glow: 0 0 32px hsl(210 90% 70% / 0.2);
+    --shadow-input: 0 0 0 0 hsl(210 85% 58% / 0);
+    --shadow-input-focus: 0 0 0 3px hsl(210 85% 58% / 0.15);
+
+    --sidebar-background: 240 5.9% 10%;
+    --sidebar-foreground: 240 4.8% 95.9%;
+    --sidebar-primary: 224.3 76.3% 48%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 240 3.7% 15.9%;
+    --sidebar-accent-foreground: 240 4.8% 95.9%;
+    --sidebar-border: 240 3.7% 15.9%;
+    --sidebar-ring: 217.2 91.2% 59.8%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    font-family: 'Source Sans Pro', sans-serif;
+  }
+
+  /* Beautiful scrollbars with dark mode support */
+  ::-webkit-scrollbar {
+    @apply w-2 h-2;
+  }
+
+  ::-webkit-scrollbar-track {
+    @apply bg-muted/30 rounded-full;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    @apply bg-muted-foreground/20 rounded-full hover:bg-muted-foreground/30 transition-colors;
+  }
+
+  .dark ::-webkit-scrollbar-thumb {
+    @apply bg-muted-foreground/30 hover:bg-muted-foreground/40;
+  }
+
+  /* Firefox scrollbar styling */
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: hsl(var(--muted-foreground) / 0.2) hsl(var(--muted) / 0.3);
+  }
+
+  .dark * {
+    scrollbar-color: hsl(var(--muted-foreground) / 0.3) hsl(var(--muted) / 0.3);
+  }
+}
