@@ -173,3 +173,34 @@ All colors MUST be HSL.
     scrollbar-color: hsl(var(--muted-foreground) / 0.3) hsl(var(--muted) / 0.3);
   }
 }
+
+/* Custom toast styles - make them much smaller */
+[data-sonner-toaster] {
+  @apply text-xs;
+}
+
+[data-sonner-toaster] [data-content] {
+  @apply text-xs leading-tight;
+}
+
+[data-sonner-toaster] [data-title] {
+  @apply text-sm font-semibold leading-tight;
+}
+
+[data-sonner-toaster] [data-description] {
+  @apply text-xs leading-tight;
+}
+
+[data-sonner-toast] {
+  @apply py-2 px-3 min-h-0;
+  min-width: 200px !important;
+  max-width: 300px !important;
+}
+
+[data-sonner-toast][data-styled=true] {
+  padding: 6px 10px !important;
+}
+
+[data-close-button] {
+  @apply w-4 h-4;
+}

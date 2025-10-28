@@ -352,15 +352,15 @@ const Admin = () => {
     <div className="min-h-screen bg-background overflow-hidden">
       {/* Header */}
       <header className="border-b bg-card sticky top-0 z-50 shadow-[var(--shadow-card)]">
-        <div className="container mx-auto px-6 py-4">
+        <div className="container mx-auto px-6 py-3">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
               <Button variant="ghost" size="icon" onClick={() => navigate("/")}>
                 <ArrowLeft className="h-5 w-5" />
               </Button>
               <div>
-                <h1 className="text-2xl font-bold">Admin Panel</h1>
-                <p className="text-sm text-muted-foreground">Administrer værktøjer og kategorier</p>
+                <h1 className="text-xl font-bold">Admin Panel</h1>
+                <p className="text-xs text-muted-foreground">Administrer værktøjer og kategorier</p>
               </div>
             </div>
             <div className="flex items-center gap-3">
@@ -387,16 +387,16 @@ const Admin = () => {
       </header>
 
       {/* Main Content */}
-      <main className="container mx-auto px-6 py-6 h-[calc(100vh-80px)] overflow-hidden">
+      <main className="container mx-auto px-6 py-4 h-[calc(100vh-73px)] overflow-hidden">
         <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as "tools" | "categories")} className="w-full">
 
           {/* Tools Tab */}
-          <TabsContent value="tools" className="space-y-0">
-            <div className="grid grid-cols-[320px,1fr] gap-6">
+          <TabsContent value="tools" className="space-y-0 h-full">
+            <div className="grid grid-cols-[300px,1fr] gap-4 h-full">
               {/* Tool List - Compact */}
-              <div className="space-y-3">
-                <h2 className="text-lg font-semibold">Eksisterende værktøjer</h2>
-                <ScrollArea className="h-[calc(100vh-180px)] rounded-lg border bg-card p-4">
+              <div className="space-y-2">
+                <h2 className="text-base font-semibold">Eksisterende værktøjer</h2>
+                <ScrollArea className="h-[calc(100vh-145px)] rounded-lg border bg-card p-3">
                   <div className="space-y-2">
                     {tools.map((tool) => (
                       <div
@@ -458,7 +458,7 @@ const Admin = () => {
                 </div>
                 
                 <ScrollArea className="h-[calc(100vh-260px)] rounded-lg border bg-card p-6">
-                  <form onSubmit={handleCreateTool} className="space-y-4">
+                  <form onSubmit={handleCreateTool} className="space-y-3">
                     <div className="space-y-2">
                       <Label htmlFor="tool-name">Navn *</Label>
                       <Input
@@ -628,12 +628,12 @@ const Admin = () => {
           </TabsContent>
 
           {/* Categories Tab */}
-          <TabsContent value="categories" className="space-y-0">
-            <div className="grid grid-cols-1 xl:grid-cols-2 gap-8 max-w-6xl mx-auto">
+          <TabsContent value="categories" className="space-y-0 h-full">
+            <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 max-w-6xl mx-auto">
               {/* Category List */}
-              <div className="space-y-3">
-                <h2 className="text-lg font-semibold">Eksisterende kategorier</h2>
-                <ScrollArea className="h-[calc(100vh-180px)] rounded-lg border bg-card p-4">
+              <div className="space-y-2">
+                <h2 className="text-base font-semibold">Eksisterende kategorier</h2>
+                <ScrollArea className="h-[calc(100vh-145px)] rounded-lg border bg-card p-3">
                   <div className="space-y-2">
                     {categories.map((category) => (
                       <div
@@ -661,10 +661,10 @@ const Admin = () => {
               </div>
 
               {/* Create Category Form */}
-              <div className="space-y-3">
-                <h2 className="text-lg font-semibold">Opret ny kategori</h2>
-                <div className="rounded-lg border bg-card p-6">
-                  <form onSubmit={handleCreateCategory} className="space-y-4">
+              <div className="space-y-2">
+                <h2 className="text-base font-semibold">Opret ny kategori</h2>
+                <div className="rounded-lg border bg-card p-4">
+                  <form onSubmit={handleCreateCategory} className="space-y-3">
                     <div className="space-y-2">
                       <Label htmlFor="category-name">Kategorinavn *</Label>
                       <Input
