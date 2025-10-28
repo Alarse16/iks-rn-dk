@@ -10,6 +10,7 @@ import { Badge } from "@/components/ui/badge";
 import { Trash2, Plus, Upload, X } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Tool } from "@/data/tools";
+import { ToolCard } from "@/components/ToolCard";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -213,21 +214,16 @@ export const AdminModal = ({ isOpen, onClose, onRefresh, availableCategories }: 
     setIsSubmitting(true);
 
     try {
-      let finalIconUrl = "";
-
+      // Convert icon file to base64 if provided
+      let finalIconUrl = toolForm.icon;
+      
       if (iconFile) {
-        const formData = new FormData();
-        formData.append("file", iconFile);
-
-        const uploadResponse = await fetch(`${API_BASE_URL}/upload-icon`, {
-          method: "POST",
-          body: formData,
+        const reader = new FileReader();
+        finalIconUrl = await new Promise<string>((resolve, reject) => {
+          reader.onload = () => resolve(reader.result as string);
+          reader.onerror = reject;
+          reader.readAsDataURL(iconFile);
         });
-
-        if (!uploadResponse.ok) throw new Error("Failed to upload icon");
-
-        const uploadData = await uploadResponse.json();
-        finalIconUrl = uploadData.url;
       }
 
       const toolData = {
@@ -238,7 +234,7 @@ export const AdminModal = ({ isOpen, onClose, onRefresh, availableCategories }: 
         contact_info: toolForm.contact_info || undefined,
         link: toolForm.link,
         category: toolForm.categories,
-        icon: finalIconUrl || toolForm.icon || undefined,
+        icon: finalIconUrl || undefined,
       };
 
       const response = await fetch(`${API_BASE_URL}/tools`, {
@@ -421,6 +417,24 @@ export const AdminModal = ({ isOpen, onClose, onRefresh, availableCategories }: 
                 <div className="space-y-3">
                   <h3 className="font-semibold text-lg">Opret nyt værktøj</h3>
                   <ScrollArea className="h-[500px] rounded-md border p-4">
+                    {/* Sticky Preview Card */}
+                    <div className="sticky top-0 z-10 bg-background/95 backdrop-blur-sm pb-4 mb-4 border-b">
+                      <p className="text-sm font-medium mb-2 text-muted-foreground">Forhåndsvisning:</p>
+                      <ToolCard
+                        icon={
+                          iconFile 
+                            ? URL.createObjectURL(iconFile) 
+                            : toolForm.icon || "Wrench"
+                        }
+                        name={toolForm.name || "Værktøjsnavn"}
+                        description={toolForm.short_description || "Beskrivelse af værktøjet..."}
+                        link={toolForm.link || "#"}
+                        category={toolForm.categories[0] || "Ingen kategori"}
+                        tags={toolForm.categories.slice(1)}
+                        onInfoClick={() => {}}
+                      />
+                    </div>
+                    
                     <form onSubmit={handleCreateTool} className="space-y-4">
                       <div className="space-y-2">
                         <Label htmlFor="tool-name">Navn *</Label>
@@ -514,31 +528,52 @@ export const AdminModal = ({ isOpen, onClose, onRefresh, availableCategories }: 
 
                       <div className="space-y-2">
                         <Label>Ikon</Label>
-                        <div className="flex items-center gap-2">
-                          <label className="flex-1 cursor-pointer">
-                            <div className="flex items-center gap-2 h-11 w-full rounded-lg border-2 border-input bg-background px-4 py-2 text-sm shadow-[var(--shadow-sm)] hover:border-primary transition-colors">
-                              <Upload className="h-4 w-4 text-muted-foreground" />
-                              <span className="text-muted-foreground">
-                                {iconFile ? iconFile.name : "Vælg fil fra computer"}
-                              </span>
-                            </div>
-                            <input
-                              type="file"
-                              accept="image/*"
-                              onChange={handleImageUpload}
-                              className="hidden"
+                        <div className="space-y-3">
+                          <div className="space-y-2">
+                            <Label htmlFor="tool-icon-name" className="text-xs text-muted-foreground">
+                              Lucide ikon navn (f.eks. "Wrench", "Home", "Settings")
+                            </Label>
+                            <Input
+                              id="tool-icon-name"
+                              value={toolForm.icon}
+                              onChange={(e) => setToolForm({ ...toolForm, icon: e.target.value })}
+                              placeholder="Wrench"
                             />
-                          </label>
-                          {iconFile && (
-                            <Button
-                              type="button"
-                              variant="ghost"
-                              size="icon"
-                              onClick={() => setIconFile(null)}
-                            >
-                              <X className="h-4 w-4" />
-                            </Button>
-                          )}
+                          </div>
+                          <div className="relative">
+                            <div className="absolute inset-0 flex items-center">
+                              <span className="w-full border-t" />
+                            </div>
+                            <div className="relative flex justify-center text-xs uppercase">
+                              <span className="bg-background px-2 text-muted-foreground">eller</span>
+                            </div>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <label className="flex-1 cursor-pointer">
+                              <div className="flex items-center gap-2 h-11 w-full rounded-lg border-2 border-input bg-background px-4 py-2 text-sm shadow-[var(--shadow-sm)] hover:border-primary transition-colors">
+                                <Upload className="h-4 w-4 text-muted-foreground" />
+                                <span className="text-muted-foreground">
+                                  {iconFile ? iconFile.name : "Upload billede"}
+                                </span>
+                              </div>
+                              <input
+                                type="file"
+                                accept="image/*"
+                                onChange={handleImageUpload}
+                                className="hidden"
+                              />
+                            </label>
+                            {iconFile && (
+                              <Button
+                                type="button"
+                                variant="ghost"
+                                size="icon"
+                                onClick={() => setIconFile(null)}
+                              >
+                                <X className="h-4 w-4" />
+                              </Button>
+                            )}
+                          </div>
                         </div>
                       </div>
 
