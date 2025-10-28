@@ -135,4 +135,4 @@ export const tools: any[] = [
   }
 ];
 
-export const categories = ["Alle", "Sikkerhed", "Kommunikation", "Samarbejde", "Værktøjer"];
+export const categories = ["Alle", "Sikkerhed", "Kommunikation", "Samarbejde"];
