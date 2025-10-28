@@ -355,10 +355,22 @@ const Admin = () => {
               </div>
             </div>
             <div className="flex items-center gap-3">
-              <TabsList className="grid grid-cols-2">
-                <TabsTrigger value="tools" onClick={() => setActiveTab("tools")}>Værktøjer</TabsTrigger>
-                <TabsTrigger value="categories" onClick={() => setActiveTab("categories")}>Kategorier</TabsTrigger>
-              </TabsList>
+              <div className="flex items-center gap-1 rounded-lg border p-1 bg-muted/50">
+                <Button
+                  variant={activeTab === "tools" ? "default" : "ghost"}
+                  size="sm"
+                  onClick={() => setActiveTab("tools")}
+                >
+                  Værktøjer
+                </Button>
+                <Button
+                  variant={activeTab === "categories" ? "default" : "ghost"}
+                  size="sm"
+                  onClick={() => setActiveTab("categories")}
+                >
+                  Kategorier
+                </Button>
+              </div>
               <ThemeToggle />
             </div>
           </div>
