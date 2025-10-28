@@ -20,7 +20,7 @@ const Index = () => {
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState("Alle");
+  const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const { toast } = useToast();
 
@@ -139,9 +139,17 @@ const Index = () => {
   const filteredTools = tools.filter((tool) => {
     const matchesSearch = tool.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       tool.short_description.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesCategory = selectedCategory === "Alle" || tool.category === selectedCategory;
+    const matchesCategory = selectedCategories.length === 0 || selectedCategories.includes(tool.category);
     return matchesSearch && matchesCategory;
   });
+
+  const handleCategoryToggle = (category: string) => {
+    setSelectedCategories(prev => 
+      prev.includes(category) 
+        ? prev.filter(c => c !== category)
+        : [...prev, category]
+    );
+  };
 
   return (
     <div className="min-h-screen bg-background">
@@ -186,17 +194,27 @@ const Index = () => {
 
           {/* Category Filters - Below Search */}
           <div className="flex gap-2 flex-wrap justify-center">
-            {categories.map((category) => (
+            {categories.filter(c => c !== "Alle").map((category) => (
               <Button
                 key={category}
-                variant={selectedCategory === category ? "default" : "outline"}
+                variant={selectedCategories.includes(category) ? "default" : "outline"}
                 size="sm"
-                onClick={() => setSelectedCategory(category === selectedCategory ? "Alle" : category)}
+                onClick={() => handleCategoryToggle(category)}
                 className="whitespace-nowrap transition-all duration-200"
               >
                 {category}
               </Button>
             ))}
+            {selectedCategories.length > 0 && (
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setSelectedCategories([])}
+                className="whitespace-nowrap"
+              >
+                Ryd filtre
+              </Button>
+            )}
           </div>
         </div>
       </header>
@@ -220,6 +238,7 @@ const Index = () => {
                 name={tool.name}
                 description={tool.short_description}
                 link={tool.link}
+                category={tool.category}
                 tags={tool.tags}
                 onInfoClick={() => handleInfoClick(tool)}
               />
@@ -271,8 +290,8 @@ const Index = () => {
         onClose={() => setIsAddModalOpen(false)}
         categories={categories}
         onAddCategory={handleAddCategory}
-        preselectedCategory={selectedCategory !== "Alle" ? selectedCategory : "Værktøjer"}
-        onToolCreated={fetchTools} // ✅ THIS IS THE KEY CHANGE
+        preselectedCategory={selectedCategories.length === 1 ? selectedCategories[0] : "Værktøjer"}
+        onToolCreated={fetchTools}
       />
     </div>
   );

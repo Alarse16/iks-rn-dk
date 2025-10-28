@@ -9,11 +9,12 @@ interface ToolCardProps {
   name: string;
   description: string;
   link: string;
+  category?: string;
   tags?: string[];
   onInfoClick: () => void;
 }
 
-export const ToolCard = ({ icon, name, description, link, tags, onInfoClick }: ToolCardProps) => {
+export const ToolCard = ({ icon, name, description, link, category, tags, onInfoClick }: ToolCardProps) => {
   const handleCardClick = () => {
     if (link && link !== "#") {
       window.open(link, "_blank", "noopener,noreferrer");
@@ -61,8 +62,15 @@ export const ToolCard = ({ icon, name, description, link, tags, onInfoClick }: T
         </div>
       </div>
 
-      {tags && tags.length > 0 && (
-        <div className="px-6 pb-4 pt-0">
+      <div className="px-6 pb-4 pt-0 space-y-2">
+        {category && (
+          <div className="flex items-center gap-2">
+            <Badge variant="default" className="text-xs font-medium">
+              {category}
+            </Badge>
+          </div>
+        )}
+        {tags && tags.length > 0 && (
           <div className="flex flex-wrap gap-1.5">
             {tags.map((tag, index) => (
               <Badge 
@@ -74,8 +82,8 @@ export const ToolCard = ({ icon, name, description, link, tags, onInfoClick }: T
               </Badge>
             ))}
           </div>
-        </div>
-      )}
+        )}
+      </div>
     </Card>
   );
 };
