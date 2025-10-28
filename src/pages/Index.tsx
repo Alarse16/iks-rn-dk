@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import { ToolCard } from "@/components/ToolCard";
 import { ToolModal } from "@/components/ToolModal";
-import { AdminModal } from "@/components/AdminModal";
 import { AuthModal } from "@/components/AuthModal";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { Input } from "@/components/ui/input";
@@ -17,7 +16,6 @@ const Index = () => {
   const [categories, setCategories] = useState<string[]>([]);
   const [selectedTool, setSelectedTool] = useState<Tool | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isAdminModalOpen, setIsAdminModalOpen] = useState(false);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
@@ -148,12 +146,7 @@ const Index = () => {
 
   const handleAuthenticated = () => {
     setIsAuthModalOpen(false);
-    setIsAdminModalOpen(true);
-  };
-
-  const handleRefresh = () => {
-    fetchTools();
-    fetchCategories();
+    window.location.href = "/admin";
   };
 
   const filteredTools = tools.filter((tool) => {
@@ -296,14 +289,6 @@ const Index = () => {
         isOpen={isAuthModalOpen}
         onClose={() => setIsAuthModalOpen(false)}
         onAuthenticate={handleAuthenticated}
-      />
-
-      {/* Admin Modal */}
-      <AdminModal
-        isOpen={isAdminModalOpen}
-        onClose={() => setIsAdminModalOpen(false)}
-        onRefresh={handleRefresh}
-        availableCategories={categories}
       />
     </div>
   );
