@@ -153,8 +153,8 @@ const Index = () => {
               <img src="/rn-logo.svg" alt="Region Nordjylland" className="h-24 transition-transform duration-300 hover:scale-105" />
             </div>
             <div className="absolute left-1/2 -translate-x-1/2 text-center">
-              <h1 className="text-3xl font-bold tracking-tight text-foreground">IKS.rn.dk</h1>
-              <p className="text-lg font-medium text-foreground/90">Infrastruktur & Klient Services</p>
+              <h1 className="text-4xl font-bold tracking-tight text-foreground">IKS.rn.dk</h1>
+              <p className="text-xl font-medium text-foreground/90">Infrastruktur & Klient Services</p>
             </div>
             <div className="flex items-center gap-3">
               <Button onClick={handleOpenAddTool} size="lg" className="gap-2 shadow-[var(--shadow-card)]">
