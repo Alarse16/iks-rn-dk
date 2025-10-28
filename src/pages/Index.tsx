@@ -200,7 +200,7 @@ const Index = () => {
                 variant={selectedCategories.includes(category) ? "default" : "outline"}
                 size="sm"
                 onClick={() => handleCategoryToggle(category)}
-                className="whitespace-nowrap transition-all duration-200"
+                className="whitespace-nowrap transition-all duration-200 border-2 hover:scale-100 active:scale-100"
               >
                 {category}
               </Button>
