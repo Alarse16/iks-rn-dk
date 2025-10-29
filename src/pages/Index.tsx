@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { ToolCard } from "@/components/ToolCard";
 import { ToolModal } from "@/components/ToolModal";
 import { AuthModal } from "@/components/AuthModal";
@@ -12,6 +13,7 @@ import { useToast } from "@/hooks/use-toast";
 const API_BASE_URL = "https://10.253.129.201:4300";
 
 const Index = () => {
+  const navigate = useNavigate();
   const [tools, setTools] = useState<Tool[]>([]);
   const [categories, setCategories] = useState<string[]>([]);
   const [selectedTool, setSelectedTool] = useState<Tool | null>(null);
@@ -146,7 +148,7 @@ const Index = () => {
 
   const handleAuthenticated = () => {
     setIsAuthModalOpen(false);
-    window.location.href = "/admin";
+    navigate("/admin");
   };
 
   const filteredTools = tools.filter((tool) => {

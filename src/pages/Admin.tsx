@@ -464,7 +464,7 @@ const Admin = () => {
   return (
     <div className="min-h-screen bg-background overflow-hidden">
       {isLoading && (
-        <div className="fixed inset-0 z-50 bg-foreground/90" aria-hidden="true" />
+        <div className="fixed inset-0 z-[60] bg-black/80" aria-hidden="true" />
       )}
       {/* Header */}
       <header className="border-b bg-card sticky top-0 z-50 shadow-[var(--shadow-card)]">
