@@ -450,17 +450,19 @@ const Admin = () => {
                 
                 <ScrollArea className="h-[calc(100vh-175px)] rounded-lg border bg-card">
                   {/* Preview at Top of Scroll */}
-                  <div className="border-b p-4">
-                    <p className="text-xs font-medium mb-2 text-muted-foreground">Forhåndsvisning:</p>
-                    <ToolCard
-                      icon={previewBlobUrl || toolForm.icon || "Wrench"}
-                      name={toolForm.name || "Værktøjsnavn"}
-                      description={toolForm.short_description || "Beskrivelse af værktøjet..."}
-                      link={toolForm.link || "#"}
-                      category={toolForm.categories[0] || "Ingen kategori"}
-                      tags={toolForm.categories.slice(1)}
-                      onInfoClick={() => {}}
-                    />
+                  <div className="border-b p-6">
+                    <p className="text-xs font-medium mb-3 text-muted-foreground">Forhåndsvisning:</p>
+                    <div className="max-w-md">
+                      <ToolCard
+                        icon={previewBlobUrl || toolForm.icon || "Wrench"}
+                        name={toolForm.name || "Værktøjsnavn"}
+                        description={toolForm.short_description || "Beskrivelse af værktøjet..."}
+                        link={toolForm.link || "#"}
+                        category={toolForm.categories[0] || "Ingen kategori"}
+                        tags={toolForm.categories.slice(1)}
+                        onInfoClick={() => {}}
+                      />
+                    </div>
                   </div>
                   
                   <div className="p-6">
