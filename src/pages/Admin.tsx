@@ -48,7 +48,11 @@ const Admin = () => {
   const [iconFile, setIconFile] = useState<File | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [missingFields, setMissingFields] = useState<string[]>([]);
-  const [formMessage, setFormMessage] = useState<{
+  const [toolFormMessage, setToolFormMessage] = useState<{
+    type: 'error' | 'success';
+    text: string;
+  } | null>(null);
+  const [categoryFormMessage, setCategoryFormMessage] = useState<{
     type: 'error' | 'success';
     text: string;
   } | null>(null);
@@ -107,16 +111,16 @@ const Admin = () => {
 
       if (!response.ok) throw new Error("Failed to delete tool");
 
-      setFormMessage({
+      setToolFormMessage({
         type: 'success',
         text: 'Værktøjet blev slettet!'
       });
-      setTimeout(() => setFormMessage(null), 3000);
+      setTimeout(() => setToolFormMessage(null), 3000);
 
       fetchTools();
     } catch (error) {
       console.error("Error deleting tool:", error);
-      setFormMessage({
+      setToolFormMessage({
         type: 'error',
         text: 'Kunne ikke slette værktøjet. Prøv igen.'
       });
@@ -129,7 +133,7 @@ const Admin = () => {
       return categories.includes(categoryName);
     });
     if (toolsUsingCategory.length > 0) {
-      setFormMessage({
+      setCategoryFormMessage({
         type: 'error',
         text: `Kan ikke slette kategori: ${toolsUsingCategory.length} værktøj(er) bruger denne kategori. Slet eller opdater værktøjerne først.`
       });
@@ -143,16 +147,16 @@ const Admin = () => {
 
       if (!response.ok) throw new Error("Failed to delete category");
 
-      setFormMessage({
+      setCategoryFormMessage({
         type: 'success',
         text: 'Kategorien blev slettet!'
       });
-      setTimeout(() => setFormMessage(null), 3000);
+      setTimeout(() => setCategoryFormMessage(null), 3000);
 
       fetchCategories();
     } catch (error) {
       console.error("Error deleting category:", error);
-      setFormMessage({
+      setCategoryFormMessage({
         type: 'error',
         text: 'Kunne ikke slette kategorien. Prøv igen.'
       });
@@ -214,7 +218,7 @@ const Admin = () => {
         });
         
         if (!deleteResponse.ok) {
-          setFormMessage({
+          setToolFormMessage({
             type: 'error',
             text: 'Kunne ikke slette det gamle værktøj. Prøv igen.'
           });
@@ -267,7 +271,7 @@ const Admin = () => {
         
         // Check if error is due to duplicate name
         if (response.status === 409 || errorData.message?.includes('already exists') || errorData.message?.includes('duplicate')) {
-          setFormMessage({
+          setToolFormMessage({
             type: 'error',
             text: editingTool 
               ? `Kunne ikke opdatere: Et værktøj med navnet "${toolForm.name}" eksisterer allerede.`
@@ -281,7 +285,7 @@ const Admin = () => {
             nameField.focus();
           }
         } else {
-          setFormMessage({
+          setToolFormMessage({
             type: 'error',
             text: editingTool 
               ? 'Værktøjet blev slettet, men den nye version kunne ikke oprettes. Prøv at oprette det igen.'
@@ -292,11 +296,11 @@ const Admin = () => {
         return;
       }
 
-      setFormMessage({
+      setToolFormMessage({
         type: 'success',
         text: editingTool ? 'Værktøjet blev opdateret!' : 'Værktøjet blev oprettet!'
       });
-      setTimeout(() => setFormMessage(null), 3000);
+      setTimeout(() => setToolFormMessage(null), 3000);
 
       setToolForm({
         name: "",
@@ -315,7 +319,7 @@ const Admin = () => {
       fetchTools();
     } catch (error) {
       console.error("Error creating/updating tool:", error);
-      setFormMessage({
+      setToolFormMessage({
         type: 'error',
         text: editingTool ? 'Kunne ikke opdatere værktøjet.' : 'Kunne ikke oprette værktøjet.'
       });
@@ -328,7 +332,7 @@ const Admin = () => {
     e.preventDefault();
 
     if (!newCategoryName.trim()) {
-      setFormMessage({
+      setCategoryFormMessage({
         type: 'error',
         text: 'Kategorinavn må ikke være tomt.'
       });
@@ -348,12 +352,12 @@ const Admin = () => {
         const errorData = await response.json().catch(() => ({}));
         
         if (response.status === 409 || errorData.message?.includes('already exists')) {
-          setFormMessage({
+          setCategoryFormMessage({
             type: 'error',
             text: `Kategorien "${newCategoryName}" eksisterer allerede.`
           });
         } else {
-          setFormMessage({
+          setCategoryFormMessage({
             type: 'error',
             text: 'Kunne ikke oprette kategorien. Prøv igen.'
           });
@@ -361,17 +365,17 @@ const Admin = () => {
         return;
       }
 
-      setFormMessage({
+      setCategoryFormMessage({
         type: 'success',
         text: 'Kategorien blev oprettet!'
       });
-      setTimeout(() => setFormMessage(null), 3000);
+      setTimeout(() => setCategoryFormMessage(null), 3000);
 
       setNewCategoryName("");
       fetchCategories();
     } catch (error) {
       console.error("Error creating category:", error);
-      setFormMessage({
+      setCategoryFormMessage({
         type: 'error',
         text: 'Kunne ikke oprette kategorien. Prøv igen.'
       });
@@ -382,7 +386,7 @@ const Admin = () => {
     const file = e.target.files?.[0];
     if (file) {
       if (file.size > 5 * 1024 * 1024) {
-        setFormMessage({
+        setToolFormMessage({
           type: 'error',
           text: 'Fil for stor: Ikon må maksimalt være 5MB.'
         });
@@ -409,7 +413,7 @@ const Admin = () => {
     setEditingTool(tool);
     
     // Clear any previous messages
-    setFormMessage(null);
+    setToolFormMessage(null);
     setMissingFields([]);
     
     // Scroll to form
@@ -433,7 +437,7 @@ const Admin = () => {
     });
     setIconFile(null);
     setMissingFields([]);
-    setFormMessage(null);
+    setToolFormMessage(null);
   };
 
   const confirmDelete = (type: 'tool' | 'category', id: string, name: string) => {
@@ -584,13 +588,13 @@ const Admin = () => {
                   
                   <div className="p-6">
                   {/* Inline Message Display */}
-                  {formMessage && (
+                  {toolFormMessage && (
                     <div className={`p-4 rounded-lg mb-4 ${
-                      formMessage.type === 'error' 
+                      toolFormMessage.type === 'error' 
                         ? 'bg-destructive/10 text-destructive border border-destructive/20' 
                         : 'bg-green-500/10 text-green-700 dark:text-green-400 border border-green-500/20'
                     }`}>
-                      <p className="text-sm font-medium">{formMessage.text}</p>
+                      <p className="text-sm font-medium">{toolFormMessage.text}</p>
                     </div>
                   )}
                   <form onSubmit={handleCreateTool} className="space-y-3">
@@ -803,6 +807,16 @@ const Admin = () => {
               <div className="space-y-2">
                 <h2 className="text-base font-semibold">Opret ny kategori</h2>
                 <div className="rounded-lg border bg-card p-4">
+                  {/* Inline Message Display */}
+                  {categoryFormMessage && (
+                    <div className={`p-4 rounded-lg mb-4 ${
+                      categoryFormMessage.type === 'error' 
+                        ? 'bg-destructive/10 text-destructive border border-destructive/20' 
+                        : 'bg-green-500/10 text-green-700 dark:text-green-400 border border-green-500/20'
+                    }`}>
+                      <p className="text-sm font-medium">{categoryFormMessage.text}</p>
+                    </div>
+                  )}
                   <form onSubmit={handleCreateCategory} className="space-y-3">
                     <div className="space-y-2">
                       <Label htmlFor="category-name">Kategorinavn *</Label>
