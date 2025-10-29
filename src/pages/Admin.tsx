@@ -404,7 +404,7 @@ const Admin = () => {
 
           {/* Tools Tab */}
           <TabsContent value="tools" className="space-y-0 h-full">
-            <div className="grid grid-cols-[300px,300px] gap-4 h-full">
+            <div className="grid grid-cols-[300px,1fr] gap-4 h-full">
               {/* Tool List - Compact */}
               <div className="space-y-2">
                 <h2 className="text-base font-semibold">Eksisterende værktøjer</h2>
