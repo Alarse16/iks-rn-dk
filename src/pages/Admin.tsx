@@ -8,7 +8,6 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Badge } from "@/components/ui/badge";
 import { Trash2, Plus, Upload, X, ArrowLeft } from "lucide-react";
-import { useToast } from "@/hooks/use-toast";
 import { Tool } from "@/data/tools";
 import { ToolCard } from "@/components/ToolCard";
 import { ThemeToggle } from "@/components/ThemeToggle";
@@ -27,7 +26,6 @@ const API_BASE_URL = "https://10.253.129.201:4300";
 
 const Admin = () => {
   const navigate = useNavigate();
-  const { toast } = useToast();
   const [tools, setTools] = useState<Tool[]>([]);
   const [categories, setCategories] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -49,6 +47,10 @@ const Admin = () => {
   const [iconFile, setIconFile] = useState<File | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [missingFields, setMissingFields] = useState<string[]>([]);
+  const [formMessage, setFormMessage] = useState<{
+    type: 'error' | 'success';
+    text: string;
+  } | null>(null);
 
   // Category form state
   const [newCategoryName, setNewCategoryName] = useState("");
@@ -82,11 +84,6 @@ const Admin = () => {
       setTools(toolsWithId);
     } catch (error) {
       console.error("Error fetching tools:", error);
-      toast({
-        title: "Fejl",
-        description: "Kunne ikke hente værktøjer",
-        variant: "destructive",
-      });
     }
   };
 
@@ -98,11 +95,6 @@ const Admin = () => {
       setCategories(data);
     } catch (error) {
       console.error("Error fetching categories:", error);
-      toast({
-        title: "Fejl",
-        description: "Kunne ikke hente kategorier",
-        variant: "destructive",
-      });
     }
   };
 
@@ -114,18 +106,18 @@ const Admin = () => {
 
       if (!response.ok) throw new Error("Failed to delete tool");
 
-      toast({
-        title: "Succes",
-        description: "Værktøjet blev slettet",
+      setFormMessage({
+        type: 'success',
+        text: 'Værktøjet blev slettet!'
       });
+      setTimeout(() => setFormMessage(null), 3000);
 
       fetchTools();
     } catch (error) {
       console.error("Error deleting tool:", error);
-      toast({
-        title: "Fejl",
-        description: "Kunne ikke slette værktøjet",
-        variant: "destructive",
+      setFormMessage({
+        type: 'error',
+        text: 'Kunne ikke slette værktøjet. Prøv igen.'
       });
     }
   };
@@ -136,10 +128,9 @@ const Admin = () => {
       return categories.includes(categoryName);
     });
     if (toolsUsingCategory.length > 0) {
-      toast({
-        title: "Kan ikke slette kategori",
-        description: `${toolsUsingCategory.length} værktøj(er) bruger denne kategori. Slet eller opdater værktøjerne først.`,
-        variant: "destructive",
+      setFormMessage({
+        type: 'error',
+        text: `Kan ikke slette kategori: ${toolsUsingCategory.length} værktøj(er) bruger denne kategori. Slet eller opdater værktøjerne først.`
       });
       return;
     }
@@ -151,18 +142,18 @@ const Admin = () => {
 
       if (!response.ok) throw new Error("Failed to delete category");
 
-      toast({
-        title: "Succes",
-        description: "Kategorien blev slettet",
+      setFormMessage({
+        type: 'success',
+        text: 'Kategorien blev slettet!'
       });
+      setTimeout(() => setFormMessage(null), 3000);
 
       fetchCategories();
     } catch (error) {
       console.error("Error deleting category:", error);
-      toast({
-        title: "Fejl",
-        description: "Kunne ikke slette kategorien",
-        variant: "destructive",
+      setFormMessage({
+        type: 'error',
+        text: 'Kunne ikke slette kategorien. Prøv igen.'
       });
     }
   };
@@ -240,8 +231,8 @@ const Admin = () => {
         documentation: toolForm.documentation || undefined,
         contact_info: toolForm.contact_info || undefined,
         link: toolForm.link,
-        // Backend expects a single string for category
-        category: toolForm.categories[0],
+        // Send all categories as array
+        category: toolForm.categories,
       };
 
       if (iconBase64) toolData.icon = iconBase64;
@@ -254,12 +245,37 @@ const Admin = () => {
         body: JSON.stringify(toolData),
       });
 
-      if (!response.ok) throw new Error("Failed to create tool");
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        
+        // Check if error is due to duplicate name
+        if (response.status === 409 || errorData.message?.includes('already exists') || errorData.message?.includes('duplicate')) {
+          setFormMessage({
+            type: 'error',
+            text: `Værktøjet "${toolForm.name}" eksisterer allerede. Vælg et andet navn.`
+          });
+          
+          // Scroll to name field
+          const nameField = document.getElementById('tool-name');
+          if (nameField) {
+            nameField.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            nameField.focus();
+          }
+        } else {
+          setFormMessage({
+            type: 'error',
+            text: 'Kunne ikke oprette værktøjet. Prøv igen.'
+          });
+        }
+        setIsSubmitting(false);
+        return;
+      }
 
-      toast({
-        title: "Succes",
-        description: "Værktøjet blev oprettet",
+      setFormMessage({
+        type: 'success',
+        text: 'Værktøjet blev oprettet!'
       });
+      setTimeout(() => setFormMessage(null), 3000);
 
       setToolForm({
         name: "",
@@ -277,10 +293,9 @@ const Admin = () => {
       fetchTools();
     } catch (error) {
       console.error("Error creating tool:", error);
-      toast({
-        title: "Fejl",
-        description: "Kunne ikke oprette værktøjet",
-        variant: "destructive",
+      setFormMessage({
+        type: 'error',
+        text: 'Kunne ikke oprette værktøjet. Prøv igen.'
       });
     } finally {
       setIsSubmitting(false);
@@ -291,10 +306,9 @@ const Admin = () => {
     e.preventDefault();
 
     if (!newCategoryName.trim()) {
-      toast({
-        title: "Fejl",
-        description: "Kategorinavn må ikke være tomt",
-        variant: "destructive",
+      setFormMessage({
+        type: 'error',
+        text: 'Kategorinavn må ikke være tomt.'
       });
       return;
     }
@@ -308,21 +322,36 @@ const Admin = () => {
         body: JSON.stringify({ name: newCategoryName.trim() }),
       });
 
-      if (!response.ok) throw new Error("Failed to create category");
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        
+        if (response.status === 409 || errorData.message?.includes('already exists')) {
+          setFormMessage({
+            type: 'error',
+            text: `Kategorien "${newCategoryName}" eksisterer allerede.`
+          });
+        } else {
+          setFormMessage({
+            type: 'error',
+            text: 'Kunne ikke oprette kategorien. Prøv igen.'
+          });
+        }
+        return;
+      }
 
-      toast({
-        title: "Succes",
-        description: "Kategorien blev oprettet",
+      setFormMessage({
+        type: 'success',
+        text: 'Kategorien blev oprettet!'
       });
+      setTimeout(() => setFormMessage(null), 3000);
 
       setNewCategoryName("");
       fetchCategories();
     } catch (error) {
       console.error("Error creating category:", error);
-      toast({
-        title: "Fejl",
-        description: "Kunne ikke oprette kategorien",
-        variant: "destructive",
+      setFormMessage({
+        type: 'error',
+        text: 'Kunne ikke oprette kategorien. Prøv igen.'
       });
     }
   };
@@ -331,10 +360,9 @@ const Admin = () => {
     const file = e.target.files?.[0];
     if (file) {
       if (file.size > 5 * 1024 * 1024) {
-        toast({
-          title: "Fil for stor",
-          description: "Ikon må maksimalt være 5MB",
-          variant: "destructive",
+        setFormMessage({
+          type: 'error',
+          text: 'Fil for stor: Ikon må maksimalt være 5MB.'
         });
         return;
       }
@@ -449,8 +477,8 @@ const Admin = () => {
                 <h2 className="text-lg font-semibold">Opret nyt værktøj</h2>
                 
                 <ScrollArea className="h-[calc(100vh-175px)] rounded-lg border bg-card">
-                  {/* Preview at Top of Scroll */}
-                  <div className="border-b p-6">
+                  {/* Sticky Preview at Top */}
+                  <div className="sticky top-0 z-10 bg-card border-b p-6">
                     <p className="text-xs font-medium mb-3 text-muted-foreground">Forhåndsvisning:</p>
                     <div className="max-w-md">
                       <ToolCard
@@ -466,6 +494,16 @@ const Admin = () => {
                   </div>
                   
                   <div className="p-6">
+                  {/* Inline Message Display */}
+                  {formMessage && (
+                    <div className={`p-4 rounded-lg mb-4 ${
+                      formMessage.type === 'error' 
+                        ? 'bg-destructive/10 text-destructive border border-destructive/20' 
+                        : 'bg-green-500/10 text-green-700 dark:text-green-400 border border-green-500/20'
+                    }`}>
+                      <p className="text-sm font-medium">{formMessage.text}</p>
+                    </div>
+                  )}
                   <form onSubmit={handleCreateTool} className="space-y-3">
                     <div className="space-y-2">
                       <Label htmlFor="tool-name">Navn *</Label>
