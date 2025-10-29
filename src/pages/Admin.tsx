@@ -32,6 +32,7 @@ const Admin = () => {
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
   const [itemToDelete, setItemToDelete] = useState<{ type: 'tool' | 'category', id: string, name: string } | null>(null);
   const [activeTab, setActiveTab] = useState<"tools" | "categories">("tools");
+  const [editingTool, setEditingTool] = useState<Tool | null>(null);
 
   // Tool form state
   const [toolForm, setToolForm] = useState({
@@ -206,6 +207,22 @@ const Admin = () => {
     setIsSubmitting(true);
 
     try {
+      // If editing, delete the old tool first
+      if (editingTool) {
+        const deleteResponse = await fetch(`${API_BASE_URL}/tools/${encodeURIComponent(editingTool.name)}`, {
+          method: "DELETE",
+        });
+        
+        if (!deleteResponse.ok) {
+          setFormMessage({
+            type: 'error',
+            text: 'Kunne ikke slette det gamle værktøj. Prøv igen.'
+          });
+          setIsSubmitting(false);
+          return;
+        }
+      }
+
       // Build icon as raw base64 (no data: prefix) only if a file was uploaded or a raw base64 was provided
       let iconBase64: string | undefined = undefined;
 
@@ -252,7 +269,9 @@ const Admin = () => {
         if (response.status === 409 || errorData.message?.includes('already exists') || errorData.message?.includes('duplicate')) {
           setFormMessage({
             type: 'error',
-            text: `Værktøjet "${toolForm.name}" eksisterer allerede. Vælg et andet navn.`
+            text: editingTool 
+              ? `Kunne ikke opdatere: Et værktøj med navnet "${toolForm.name}" eksisterer allerede.`
+              : `Værktøjet "${toolForm.name}" eksisterer allerede. Vælg et andet navn.`
           });
           
           // Scroll to name field
@@ -264,7 +283,9 @@ const Admin = () => {
         } else {
           setFormMessage({
             type: 'error',
-            text: 'Kunne ikke oprette værktøjet. Prøv igen.'
+            text: editingTool 
+              ? 'Værktøjet blev slettet, men den nye version kunne ikke oprettes. Prøv at oprette det igen.'
+              : 'Kunne ikke oprette værktøjet. Prøv igen.'
           });
         }
         setIsSubmitting(false);
@@ -273,7 +294,7 @@ const Admin = () => {
 
       setFormMessage({
         type: 'success',
-        text: 'Værktøjet blev oprettet!'
+        text: editingTool ? 'Værktøjet blev opdateret!' : 'Værktøjet blev oprettet!'
       });
       setTimeout(() => setFormMessage(null), 3000);
 
@@ -289,13 +310,14 @@ const Admin = () => {
       });
       setIconFile(null);
       setMissingFields([]);
+      setEditingTool(null);
 
       fetchTools();
     } catch (error) {
-      console.error("Error creating tool:", error);
+      console.error("Error creating/updating tool:", error);
       setFormMessage({
         type: 'error',
-        text: 'Kunne ikke oprette værktøjet. Prøv igen.'
+        text: editingTool ? 'Kunne ikke opdatere værktøjet.' : 'Kunne ikke oprette værktøjet.'
       });
     } finally {
       setIsSubmitting(false);
@@ -370,6 +392,50 @@ const Admin = () => {
     }
   };
 
+  const handleToolClick = (tool: Tool) => {
+    // Populate form with tool data
+    setToolForm({
+      name: tool.name,
+      short_description: tool.short_description,
+      detailed_description: tool.detailed_description || "",
+      documentation: tool.documentation || "",
+      contact_info: tool.contact_info || "",
+      link: tool.link,
+      categories: tool.categories || [],
+      icon: tool.icon || "",
+    });
+    
+    // Set editing mode
+    setEditingTool(tool);
+    
+    // Clear any previous messages
+    setFormMessage(null);
+    setMissingFields([]);
+    
+    // Scroll to form
+    const formSection = document.querySelector('[data-form-section="true"]');
+    if (formSection) {
+      formSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  };
+
+  const handleCancelEdit = () => {
+    setEditingTool(null);
+    setToolForm({
+      name: "",
+      short_description: "",
+      detailed_description: "",
+      documentation: "",
+      contact_info: "",
+      link: "",
+      categories: [],
+      icon: "",
+    });
+    setIconFile(null);
+    setMissingFields([]);
+    setFormMessage(null);
+  };
+
   const confirmDelete = (type: 'tool' | 'category', id: string, name: string) => {
     setItemToDelete({ type, id, name });
     setDeleteConfirmOpen(true);
@@ -441,7 +507,12 @@ const Admin = () => {
                     {tools.map((tool) => (
                       <div
                         key={tool.id}
-                        className="flex items-center justify-between p-3 rounded-lg border bg-background hover:bg-accent/50 transition-colors"
+                        className={`flex items-center justify-between p-3 rounded-lg border transition-colors cursor-pointer ${
+                          editingTool?.name === tool.name 
+                            ? 'bg-primary/10 border-primary' 
+                            : 'bg-background hover:bg-accent/50'
+                        }`}
+                        onClick={() => handleToolClick(tool)}
                       >
                         <div className="flex-1 min-w-0">
                           <p className="font-medium text-sm truncate">{tool.name}</p>
@@ -456,7 +527,10 @@ const Admin = () => {
                         <Button
                           variant="ghost"
                           size="icon"
-                          onClick={() => confirmDelete('tool', tool.id, tool.name)}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            confirmDelete('tool', tool.id, tool.name);
+                          }}
                           className="ml-2 h-8 w-8 text-destructive hover:text-destructive hover:bg-destructive/10"
                         >
                           <Trash2 className="h-4 w-4" />
@@ -473,8 +547,23 @@ const Admin = () => {
               </div>
 
               {/* Create Tool Form - Maximized */}
-              <div className="space-y-3">
-                <h2 className="text-lg font-semibold">Opret nyt værktøj</h2>
+              <div className="space-y-3" data-form-section="true">
+                <div className="flex items-center justify-between">
+                  <h2 className="text-lg font-semibold">
+                    {editingTool ? "Rediger værktøj" : "Opret nyt værktøj"}
+                  </h2>
+                  {editingTool && (
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={handleCancelEdit}
+                      className="text-muted-foreground"
+                    >
+                      <X className="h-4 w-4 mr-1" />
+                      Annuller
+                    </Button>
+                  )}
+                </div>
                 
                 <ScrollArea className="h-[calc(100vh-175px)] rounded-lg border bg-card">
                   {/* Sticky Preview at Top */}
@@ -654,7 +743,10 @@ const Admin = () => {
                         variant={!isFormValid ? "secondary" : "default"}
                         onMouseEnter={() => setMissingFields(computeMissingFields())}
                       >
-                        {isSubmitting ? "Opretter..." : "Opret værktøj"}
+                        {isSubmitting 
+                          ? (editingTool ? "Opdaterer..." : "Opretter...") 
+                          : (editingTool ? "Opdater værktøj" : "Opret værktøj")
+                        }
                       </Button>
                       {!isFormValid && (
                         <div className="absolute left-0 right-0 -top-2 translate-y-[-100%] bg-popover text-popover-foreground px-3 py-2 rounded-md shadow-lg border opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-50">
