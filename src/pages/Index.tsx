@@ -58,7 +58,8 @@ const Index = () => {
       // Add id field for frontend compatibility (API doesn't return id).
       const toolsWithId = data.map((tool: any) => ({
         ...tool,
-        id: tool.name // Use name as id since it's unique
+        id: tool.name, // Use name as id since it's unique
+        categories: tool.category // Map 'category' to 'categories' for frontend consistency
       }));
       
       console.log("✅ Tools with IDs:", toolsWithId);
