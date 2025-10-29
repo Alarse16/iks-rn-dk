@@ -4,5 +4,5 @@ services:
   pwa-frontend:
     image: "${HARBOR_REGISTRY}/${REPOSITORY}:${IMAGE_TAG}"
     ports:
-      - "3333:81"                # Expose Nginx on port 81
+      - "4301:81"                # Expose Nginx on port 81
     restart: unless-stopped
