@@ -86,6 +86,14 @@ const Admin = () => {
       const toolsWithId = data.map((tool: any) => ({
         ...tool,
         id: tool.name,
+        // Normalize categories: prefer API 'categories' array, fall back to legacy 'category'
+        categories: Array.isArray(tool?.categories)
+          ? tool.categories
+          : Array.isArray(tool?.category)
+            ? tool.category
+            : (typeof tool?.category === "string" && tool.category.trim().length > 0
+                ? [tool.category]
+                : [])
       }));
       setTools(toolsWithId);
     } catch (error) {
@@ -256,7 +264,7 @@ const Admin = () => {
         contact_info: toolForm.contact_info || undefined,
         link: toolForm.link,
         // Send all categories as array
-        category: toolForm.categories,
+        categories: toolForm.categories,
       };
 
       if (iconBase64) toolData.icon = iconBase64;

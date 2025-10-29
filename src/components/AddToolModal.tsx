@@ -60,7 +60,7 @@ export const AddToolModal = ({
         documentation: formData.documentation || null,
         contact_info: formData.contact_info || null,
         link: formData.link,
-        category: formData.category,
+        categories: formData.category ? [formData.category] : [],
         icon: iconValue,
       };
 

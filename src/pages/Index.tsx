@@ -59,7 +59,14 @@ const Index = () => {
       const toolsWithId = data.map((tool: any) => ({
         ...tool,
         id: tool.name, // Use name as id since it's unique
-        categories: tool.category // Map 'category' to 'categories' for frontend consistency
+        // Normalize categories: prefer API 'categories' array, fall back to legacy 'category'
+        categories: Array.isArray(tool?.categories)
+          ? tool.categories
+          : Array.isArray(tool?.category)
+            ? tool.category
+            : (typeof tool?.category === "string" && tool.category.trim().length > 0
+                ? [tool.category]
+                : [])
       }));
       
       console.log("✅ Tools with IDs:", toolsWithId);

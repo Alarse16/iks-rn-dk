@@ -233,7 +233,7 @@ export const AdminModal = ({ isOpen, onClose, onRefresh, availableCategories }: 
         documentation: toolForm.documentation || undefined,
         contact_info: toolForm.contact_info || undefined,
         link: toolForm.link,
-        category: toolForm.categories,
+        categories: toolForm.categories,
         icon: finalIconUrl || undefined,
       };
 
