@@ -78,6 +78,7 @@ const Admin = () => {
   }, []);
 
   const fetchTools = async () => {
+    setIsLoading(true);
     try {
       const response = await fetch(`${API_BASE_URL}/tools`);
       if (!response.ok) throw new Error("Failed to fetch tools");
@@ -89,6 +90,8 @@ const Admin = () => {
       setTools(toolsWithId);
     } catch (error) {
       console.error("Error fetching tools:", error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -457,6 +460,17 @@ const Admin = () => {
     setDeleteConfirmOpen(false);
     setItemToDelete(null);
   };
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="text-center space-y-4">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
+          <p className="text-muted-foreground">Indlæser admin panel...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background overflow-hidden">
