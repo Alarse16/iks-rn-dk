@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -52,6 +52,18 @@ const Admin = () => {
 
   // Category form state
   const [newCategoryName, setNewCategoryName] = useState("");
+
+  // Properly manage blob URL for icon preview
+  const previewBlobUrl = useMemo(() => 
+    iconFile ? URL.createObjectURL(iconFile) : "", 
+    [iconFile]
+  );
+
+  useEffect(() => {
+    return () => {
+      if (previewBlobUrl) URL.revokeObjectURL(previewBlobUrl);
+    };
+  }, [previewBlobUrl]);
 
   useEffect(() => {
     fetchTools();
@@ -434,30 +446,26 @@ const Admin = () => {
 
               {/* Create Tool Form - Maximized */}
               <div className="space-y-3">
-                <div className="flex items-start justify-between gap-6">
-                  <div className="flex-1">
-                    <h2 className="text-lg font-semibold mb-3">Opret nyt værktøj</h2>
-                  </div>
-                  {/* Preview Card at Top */}
-                  <div className="w-80 shrink-0">
-                    <p className="text-xs font-medium mb-2 text-muted-foreground">Forhåndsvisning:</p>
-                    <ToolCard
-                      icon={
-                        iconFile 
-                          ? URL.createObjectURL(iconFile) 
-                          : toolForm.icon || "Wrench"
-                      }
-                      name={toolForm.name || "Værktøjsnavn"}
-                      description={toolForm.short_description || "Beskrivelse af værktøjet..."}
-                      link={toolForm.link || "#"}
-                      category={toolForm.categories[0] || "Ingen kategori"}
-                      tags={toolForm.categories.slice(1)}
-                      onInfoClick={() => {}}
-                    />
-                  </div>
-                </div>
+                <h2 className="text-lg font-semibold">Opret nyt værktøj</h2>
                 
-                <ScrollArea className="h-[calc(100vh-260px)] rounded-lg border bg-card p-6">
+                <ScrollArea className="h-[calc(100vh-175px)] rounded-lg border bg-card">
+                  {/* Sticky Preview at Top of Scroll */}
+                  <div className="sticky top-0 z-10 bg-card/95 backdrop-blur-sm border-b p-4 max-h-[200px] overflow-y-auto">
+                    <p className="text-xs font-medium mb-2 text-muted-foreground">Forhåndsvisning:</p>
+                    <div className="scale-90 origin-top">
+                      <ToolCard
+                        icon={previewBlobUrl || toolForm.icon || "Wrench"}
+                        name={toolForm.name || "Værktøjsnavn"}
+                        description={toolForm.short_description || "Beskrivelse af værktøjet..."}
+                        link={toolForm.link || "#"}
+                        category={toolForm.categories[0] || "Ingen kategori"}
+                        tags={toolForm.categories.slice(1)}
+                        onInfoClick={() => {}}
+                      />
+                    </div>
+                  </div>
+                  
+                  <div className="p-6">
                   <form onSubmit={handleCreateTool} className="space-y-3">
                     <div className="space-y-2">
                       <Label htmlFor="tool-name">Navn *</Label>
@@ -622,6 +630,7 @@ const Admin = () => {
                       )}
                     </div>
                   </form>
+                  </div>
                 </ScrollArea>
               </div>
             </div>

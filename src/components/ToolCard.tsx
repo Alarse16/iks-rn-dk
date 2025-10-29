@@ -27,7 +27,7 @@ export const ToolCard = ({ icon, name, description, link, category, tags, onInfo
   };
 
   // Determine if icon is base64/URL or Lucide icon name
-  const isDataUrlOrHttp = icon?.startsWith('data:') || icon?.startsWith('http');
+  const isDataUrlOrHttp = icon?.startsWith('data:') || icon?.startsWith('http') || icon?.startsWith('blob:');
   const isRawBase64 = icon && /^[A-Za-z0-9+/=]+$/.test(icon) && icon.length > 100;
   const resolvedImgSrc = isDataUrlOrHttp ? icon : isRawBase64 ? `data:image/png;base64,${icon}` : undefined;
   const IconComponent = !resolvedImgSrc && icon
