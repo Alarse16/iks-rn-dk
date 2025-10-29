@@ -404,7 +404,7 @@ const Admin = () => {
 
           {/* Tools Tab */}
           <TabsContent value="tools" className="space-y-0 h-full">
-            <div className="grid grid-cols-[300px,1fr] gap-4 h-full">
+            <div className="grid grid-cols-[300px,300px] gap-4 h-full">
               {/* Tool List - Compact */}
               <div className="space-y-2">
                 <h2 className="text-base font-semibold">Eksisterende værktøjer</h2>
@@ -449,20 +449,18 @@ const Admin = () => {
                 <h2 className="text-lg font-semibold">Opret nyt værktøj</h2>
                 
                 <ScrollArea className="h-[calc(100vh-175px)] rounded-lg border bg-card">
-                  {/* Sticky Preview at Top of Scroll */}
-                  <div className="sticky top-0 z-10 bg-card/95 backdrop-blur-sm border-b p-4 max-h-[200px] overflow-y-auto">
+                  {/* Preview at Top of Scroll */}
+                  <div className="border-b p-4">
                     <p className="text-xs font-medium mb-2 text-muted-foreground">Forhåndsvisning:</p>
-                    <div className="scale-90 origin-top">
-                      <ToolCard
-                        icon={previewBlobUrl || toolForm.icon || "Wrench"}
-                        name={toolForm.name || "Værktøjsnavn"}
-                        description={toolForm.short_description || "Beskrivelse af værktøjet..."}
-                        link={toolForm.link || "#"}
-                        category={toolForm.categories[0] || "Ingen kategori"}
-                        tags={toolForm.categories.slice(1)}
-                        onInfoClick={() => {}}
-                      />
-                    </div>
+                    <ToolCard
+                      icon={previewBlobUrl || toolForm.icon || "Wrench"}
+                      name={toolForm.name || "Værktøjsnavn"}
+                      description={toolForm.short_description || "Beskrivelse af værktøjet..."}
+                      link={toolForm.link || "#"}
+                      category={toolForm.categories[0] || "Ingen kategori"}
+                      tags={toolForm.categories.slice(1)}
+                      onInfoClick={() => {}}
+                    />
                   </div>
                   
                   <div className="p-6">
