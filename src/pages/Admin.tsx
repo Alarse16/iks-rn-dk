@@ -28,7 +28,7 @@ const Admin = () => {
   const navigate = useNavigate();
   const [tools, setTools] = useState<Tool[]>([]);
   const [categories, setCategories] = useState<string[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
   const [itemToDelete, setItemToDelete] = useState<{ type: 'tool' | 'category', id: string, name: string } | null>(null);
   const [activeTab, setActiveTab] = useState<"tools" | "categories">("tools");
@@ -463,6 +463,9 @@ const Admin = () => {
 
   return (
     <div className="min-h-screen bg-background overflow-hidden">
+      {isLoading && (
+        <div className="fixed inset-0 z-50 bg-foreground/90" aria-hidden="true" />
+      )}
       {/* Header */}
       <header className="border-b bg-card sticky top-0 z-50 shadow-[var(--shadow-card)]">
         <div className="container mx-auto px-6 py-3">
