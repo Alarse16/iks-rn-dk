@@ -527,53 +527,32 @@ export const AdminModal = ({ isOpen, onClose, onRefresh, availableCategories }: 
                       </div>
 
                       <div className="space-y-2">
-                        <Label>Ikon</Label>
-                        <div className="space-y-3">
-                          <div className="space-y-2">
-                            <Label htmlFor="tool-icon-name" className="text-xs text-muted-foreground">
-                              Lucide ikon navn (f.eks. "Wrench", "Home", "Settings")
-                            </Label>
-                            <Input
-                              id="tool-icon-name"
-                              value={toolForm.icon}
-                              onChange={(e) => setToolForm({ ...toolForm, icon: e.target.value })}
-                              placeholder="Wrench"
+                        <Label>Upload ikon</Label>
+                        <div className="flex items-center gap-2">
+                          <label className="flex-1 cursor-pointer">
+                            <div className="flex items-center gap-2 h-11 w-full rounded-lg border-2 border-input bg-background px-4 py-2 text-sm shadow-[var(--shadow-sm)] hover:border-primary transition-colors">
+                              <Upload className="h-4 w-4 text-muted-foreground" />
+                              <span className="text-muted-foreground">
+                                {iconFile ? iconFile.name : "Upload billede"}
+                              </span>
+                            </div>
+                            <input
+                              type="file"
+                              accept="image/*"
+                              onChange={handleImageUpload}
+                              className="hidden"
                             />
-                          </div>
-                          <div className="relative">
-                            <div className="absolute inset-0 flex items-center">
-                              <span className="w-full border-t" />
-                            </div>
-                            <div className="relative flex justify-center text-xs uppercase">
-                              <span className="bg-background px-2 text-muted-foreground">eller</span>
-                            </div>
-                          </div>
-                          <div className="flex items-center gap-2">
-                            <label className="flex-1 cursor-pointer">
-                              <div className="flex items-center gap-2 h-11 w-full rounded-lg border-2 border-input bg-background px-4 py-2 text-sm shadow-[var(--shadow-sm)] hover:border-primary transition-colors">
-                                <Upload className="h-4 w-4 text-muted-foreground" />
-                                <span className="text-muted-foreground">
-                                  {iconFile ? iconFile.name : "Upload billede"}
-                                </span>
-                              </div>
-                              <input
-                                type="file"
-                                accept="image/*"
-                                onChange={handleImageUpload}
-                                className="hidden"
-                              />
-                            </label>
-                            {iconFile && (
-                              <Button
-                                type="button"
-                                variant="ghost"
-                                size="icon"
-                                onClick={() => setIconFile(null)}
-                              >
-                                <X className="h-4 w-4" />
-                              </Button>
-                            )}
-                          </div>
+                          </label>
+                          {iconFile && (
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              size="icon"
+                              onClick={() => setIconFile(null)}
+                            >
+                              <X className="h-4 w-4" />
+                            </Button>
+                          )}
                         </div>
                       </div>
 
