@@ -124,7 +124,7 @@ const Admin = () => {
 
   const handleDeleteCategory = async (categoryName: string) => {
     const toolsUsingCategory = tools.filter(tool => {
-      const categories = Array.isArray(tool.category) ? tool.category : [tool.category];
+      const categories = tool.categories || [];
       return categories.includes(categoryName);
     });
     if (toolsUsingCategory.length > 0) {
@@ -446,7 +446,7 @@ const Admin = () => {
                         <div className="flex-1 min-w-0">
                           <p className="font-medium text-sm truncate">{tool.name}</p>
                           <div className="flex gap-1 mt-1 flex-wrap">
-                            {(Array.isArray(tool.category) ? tool.category : [tool.category]).map((cat) => (
+                            {(tool.categories || []).map((cat) => (
                               <Badge key={cat} variant="secondary" className="text-xs">
                                 {cat}
                               </Badge>

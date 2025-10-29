@@ -153,7 +153,7 @@ const Index = () => {
     const matchesSearch = tool.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       tool.short_description.toLowerCase().includes(searchQuery.toLowerCase());
     
-    const toolCategories = Array.isArray(tool.category) ? tool.category : [tool.category];
+    const toolCategories = tool.categories || [];
     const matchesCategory = selectedCategories.length === 0 || 
       selectedCategories.some(cat => toolCategories.includes(cat));
     
@@ -245,8 +245,8 @@ const Index = () => {
                 name={tool.name}
                 description={tool.short_description}
                 link={tool.link}
-                category={Array.isArray(tool.category) ? tool.category[0] : tool.category}
-                tags={tool.tags}
+                category={tool.categories?.[0] || "Ingen kategori"}
+                tags={tool.categories?.slice(1) || []}
                 onInfoClick={() => handleInfoClick(tool)}
               />
             ))}
