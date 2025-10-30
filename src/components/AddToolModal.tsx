@@ -21,7 +21,7 @@ interface AddToolModalProps {
   onToolCreated: () => void;
 }
 
-const API_BASE_URL = "https://10.253.129.201:4300";
+const API_BASE_URL = "";
 
 export const AddToolModal = ({ 
   isOpen, 
