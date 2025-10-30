@@ -552,39 +552,54 @@ const Admin = () => {
                         return (
                           <div 
                             key={tool.name}
-                            onClick={() => handleToolClick(tool)}
-                            className={`flex items-center gap-2.5 p-2.5 rounded-md cursor-pointer transition-all duration-150 border ${
+                            className={`flex items-center gap-2.5 p-2.5 rounded-md transition-all duration-150 border ${
                               isSelected 
                                 ? 'bg-primary/10 border-primary shadow-sm' 
                                 : 'hover:bg-muted/50 border-transparent'
                             }`}
                           >
-                            {iconSrc ? (
-                              <img 
-                                src={iconSrc} 
-                                alt={tool.name}
-                                className="h-8 w-8 rounded object-cover flex-shrink-0"
-                              />
-                            ) : (
-                              <div className="h-8 w-8 rounded bg-primary/20 flex items-center justify-center flex-shrink-0">
-                                <span className="text-xs font-semibold text-primary">
-                                  {tool.name.charAt(0).toUpperCase()}
-                                </span>
-                              </div>
-                            )}
-                            <div className="flex-1 min-w-0">
-                              <p className={`text-sm font-medium truncate ${
-                                isSelected ? 'text-primary' : ''
-                              }`}>
-                                {tool.name}
-                              </p>
-                              {tool.categories && tool.categories.length > 0 && (
-                                <p className="text-xs text-muted-foreground truncate">
-                                  {tool.categories.slice(0, 2).join(", ")}
-                                  {tool.categories.length > 2 && ` +${tool.categories.length - 2}`}
-                                </p>
+                            <div 
+                              onClick={() => handleToolClick(tool)}
+                              className="flex items-center gap-2.5 flex-1 min-w-0 cursor-pointer"
+                            >
+                              {iconSrc ? (
+                                <img 
+                                  src={iconSrc} 
+                                  alt={tool.name}
+                                  className="h-8 w-8 rounded object-cover flex-shrink-0"
+                                />
+                              ) : (
+                                <div className="h-8 w-8 rounded bg-primary/20 flex items-center justify-center flex-shrink-0">
+                                  <span className="text-xs font-semibold text-primary">
+                                    {tool.name.charAt(0).toUpperCase()}
+                                  </span>
+                                </div>
                               )}
+                              <div className="flex-1 min-w-0">
+                                <p className={`text-sm font-medium truncate ${
+                                  isSelected ? 'text-primary' : ''
+                                }`}>
+                                  {tool.name}
+                                </p>
+                                {tool.categories && tool.categories.length > 0 && (
+                                  <p className="text-xs text-muted-foreground truncate">
+                                    {tool.categories.slice(0, 2).join(", ")}
+                                    {tool.categories.length > 2 && ` +${tool.categories.length - 2}`}
+                                  </p>
+                                )}
+                              </div>
                             </div>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                confirmDelete('tool', tool.name, tool.name);
+                              }}
+                              className="text-destructive hover:text-destructive hover:bg-destructive/10 h-8 w-8 flex-shrink-0"
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
                           </div>
                         );
                       })}
@@ -625,14 +640,18 @@ const Admin = () => {
                   )}
                   <form onSubmit={handleCreateTool} className="space-y-3">
                     <div className="space-y-2">
-                      <Label htmlFor="tool-name">Navn *</Label>
+                      <Label htmlFor="tool-name">Navn * (maks. 40 tegn)</Label>
                       <Input
                         id="tool-name"
                         value={toolForm.name}
-                        onChange={(e) => setToolForm({ ...toolForm, name: e.target.value })}
+                        onChange={(e) => setToolForm({ ...toolForm, name: e.target.value.slice(0, 40) })}
                         placeholder="Værktøjets navn"
+                        maxLength={40}
                         required
                       />
+                      <p className="text-xs text-muted-foreground">
+                        {toolForm.name.length}/40 tegn
+                      </p>
                     </div>
 
                     <div className="space-y-2">
