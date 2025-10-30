@@ -10,7 +10,7 @@ import { Search, Plus } from "lucide-react";
 import { Tool } from "@/data/tools";
 import { useToast } from "@/hooks/use-toast";
 
-const API_BASE_URL = "/api";
+const API_BASE_URL = "https://10.253.129.201:4300";
 
 const Index = () => {
   const navigate = useNavigate();
