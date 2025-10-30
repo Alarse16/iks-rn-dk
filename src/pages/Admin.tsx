@@ -59,6 +59,8 @@ const Admin = () => {
 
   // Category form state
   const [newCategoryName, setNewCategoryName] = useState("");
+  const [showInlineCategoryForm, setShowInlineCategoryForm] = useState(false);
+  const [inlineCategoryName, setInlineCategoryName] = useState("");
 
   // Properly manage blob URL for icon preview
   const previewBlobUrl = useMemo(() => 
@@ -224,22 +226,6 @@ const Admin = () => {
     setIsSubmitting(true);
 
     try {
-      // If editing, delete the old tool first
-      if (editingTool) {
-        const deleteResponse = await fetch(`${API_BASE_URL}/tools/${encodeURIComponent(editingTool.name)}`, {
-          method: "DELETE",
-        });
-        
-        if (!deleteResponse.ok) {
-          setToolFormMessage({
-            type: 'error',
-            text: 'Kunne ikke slette det gamle værktøj. Prøv igen.'
-          });
-          setIsSubmitting(false);
-          return;
-        }
-      }
-
       // Build icon as raw base64 (no data: prefix) only if a file was uploaded or a raw base64 was provided
       let iconBase64: string | undefined = undefined;
 
@@ -265,14 +251,19 @@ const Admin = () => {
         documentation: toolForm.documentation || undefined,
         contact_info: toolForm.contact_info || undefined,
         link: toolForm.link,
-        // Send all categories as array
         categories: toolForm.categories,
       };
 
       if (iconBase64) toolData.icon = iconBase64;
 
-      const response = await fetch(`${API_BASE_URL}/tools`, {
-        method: "POST",
+      // Use PUT for updates, POST for new tools
+      const url = editingTool 
+        ? `${API_BASE_URL}/tools/${encodeURIComponent(editingTool.name)}`
+        : `${API_BASE_URL}/tools`;
+      const method = editingTool ? "PUT" : "POST";
+
+      const response = await fetch(url, {
+        method,
         headers: {
           "Content-Type": "application/json",
         },
@@ -301,7 +292,7 @@ const Admin = () => {
           setToolFormMessage({
             type: 'error',
             text: editingTool 
-              ? 'Værktøjet blev slettet, men den nye version kunne ikke oprettes. Prøv at oprette det igen.'
+              ? 'Kunne ikke opdatere værktøjet. Prøv igen.'
               : 'Kunne ikke oprette værktøjet. Prøv igen.'
           });
         }
@@ -678,7 +669,97 @@ const Admin = () => {
                     </div>
 
                     <div className="space-y-2" id="tool-category-section">
-                      <Label htmlFor="tool-category">Kategorier * (vælg en eller flere)</Label>
+                      <div className="flex items-center justify-between">
+                        <Label htmlFor="tool-category">Kategorier * (vælg en eller flere)</Label>
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => setShowInlineCategoryForm(!showInlineCategoryForm)}
+                          className="text-xs"
+                        >
+                          <Plus className="h-3 w-3 mr-1" />
+                          Ny kategori
+                        </Button>
+                      </div>
+                      
+                      {showInlineCategoryForm && (
+                        <div className="flex gap-2 p-2 rounded-md bg-muted/50 border">
+                          <Input
+                            value={inlineCategoryName}
+                            onChange={(e) => setInlineCategoryName(e.target.value)}
+                            placeholder="Kategorinavn"
+                            className="h-8 text-sm"
+                            onKeyDown={async (e) => {
+                              if (e.key === 'Enter') {
+                                e.preventDefault();
+                                if (inlineCategoryName.trim()) {
+                                  try {
+                                    const response = await fetch(`${API_BASE_URL}/kategorier`, {
+                                      method: "POST",
+                                      headers: { "Content-Type": "application/json" },
+                                      body: JSON.stringify({ name: inlineCategoryName.trim() }),
+                                    });
+                                    if (response.ok) {
+                                      await fetchCategories();
+                                      setToolForm({
+                                        ...toolForm,
+                                        categories: [...toolForm.categories, inlineCategoryName.trim()]
+                                      });
+                                      setInlineCategoryName("");
+                                      setShowInlineCategoryForm(false);
+                                    }
+                                  } catch (error) {
+                                    console.error("Error creating category:", error);
+                                  }
+                                }
+                              }
+                            }}
+                          />
+                          <Button
+                            type="button"
+                            size="sm"
+                            className="h-8"
+                            onClick={async () => {
+                              if (inlineCategoryName.trim()) {
+                                try {
+                                  const response = await fetch(`${API_BASE_URL}/kategorier`, {
+                                    method: "POST",
+                                    headers: { "Content-Type": "application/json" },
+                                    body: JSON.stringify({ name: inlineCategoryName.trim() }),
+                                  });
+                                  if (response.ok) {
+                                    await fetchCategories();
+                                    setToolForm({
+                                      ...toolForm,
+                                      categories: [...toolForm.categories, inlineCategoryName.trim()]
+                                    });
+                                    setInlineCategoryName("");
+                                    setShowInlineCategoryForm(false);
+                                  }
+                                } catch (error) {
+                                  console.error("Error creating category:", error);
+                                }
+                              }
+                            }}
+                          >
+                            Tilføj
+                          </Button>
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="sm"
+                            className="h-8"
+                            onClick={() => {
+                              setShowInlineCategoryForm(false);
+                              setInlineCategoryName("");
+                            }}
+                          >
+                            <X className="h-3 w-3" />
+                          </Button>
+                        </div>
+                      )}
+                      
                       <div className="flex flex-wrap gap-2">
                         {categories.map((category) => (
                           <Button
