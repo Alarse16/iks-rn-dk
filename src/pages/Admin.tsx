@@ -518,91 +518,82 @@ const Admin = () => {
 
           {/* Tools Tab */}
           <TabsContent value="tools" className="space-y-0 h-full">
-            <div className="grid grid-cols-[280px,380px,1fr] gap-4 h-full">
-              {/* Existing Tools List - Left Column */}
-              <div className="space-y-2">
-                <h2 className="text-base font-semibold">Eksisterende værktøjer</h2>
-                <ScrollArea className="h-[calc(100vh-145px)] rounded-lg border bg-card p-3">
-                  <div className="space-y-2">
-                    {tools.map((tool) => (
-                      <div
-                        key={tool.id}
-                        className={`flex items-center gap-3 p-3 rounded-lg border transition-colors cursor-pointer ${
-                          editingTool?.name === tool.name 
-                            ? 'bg-primary/10 border-primary' 
-                            : 'bg-background hover:bg-accent/50'
-                        }`}
-                        onClick={() => handleToolClick(tool)}
-                      >
-                        {/* Icon */}
-                        <div className="flex-shrink-0">
-                          {tool.icon && tool.icon.length > 100 ? (
-                            <img 
-                              src={`data:image/png;base64,${tool.icon}`} 
-                              alt={tool.name}
-                              className="w-10 h-10 rounded-lg object-cover border"
-                            />
-                          ) : (
-                            <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
-                              <span className="text-xs font-semibold text-primary">
-                                {tool.name.charAt(0).toUpperCase()}
-                              </span>
-                            </div>
-                          )}
-                        </div>
-                        
-                        {/* Content */}
-                        <div className="flex-1 min-w-0">
-                          <p className="font-medium text-sm truncate">{tool.name}</p>
-                          <div className="flex gap-1 mt-1 flex-wrap">
-                            {(tool.categories || []).map((cat) => (
-                              <Badge key={cat} variant="secondary" className="text-xs">
-                                {cat}
-                              </Badge>
-                            ))}
-                          </div>
-                        </div>
-                        
-                        {/* Delete Button */}
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            confirmDelete('tool', tool.id, tool.name);
-                          }}
-                          className="flex-shrink-0 h-8 w-8 text-destructive hover:text-destructive hover:bg-destructive/10"
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
-                      </div>
-                    ))}
-                    {tools.length === 0 && (
-                      <p className="text-muted-foreground text-center py-8 text-sm">
-                        Ingen værktøjer endnu
-                      </p>
-                    )}
+            <div className="grid grid-cols-[420px,1fr] gap-6 h-full">
+              {/* Left Column - Preview + Existing Tools */}
+              <div className="space-y-4">
+                {/* Preview */}
+                <div className="space-y-2">
+                  <h2 className="text-base font-semibold">Forhåndsvisning</h2>
+                  <div className="rounded-lg border bg-card p-4">
+                    <ToolCard
+                      icon={previewBlobUrl || toolForm.icon || "Wrench"}
+                      name={toolForm.name || "Værktøjsnavn"}
+                      description={toolForm.short_description || "Beskrivelse af værktøjet..."}
+                      link={toolForm.link || "#"}
+                      category={toolForm.categories[0] || "Ingen kategori"}
+                      tags={toolForm.categories.slice(1)}
+                      onInfoClick={() => {}}
+                    />
                   </div>
-                </ScrollArea>
-              </div>
+                </div>
 
-              {/* Preview - Middle Column */}
-              <div className="space-y-2">
-                <h2 className="text-base font-semibold">Forhåndsvisning</h2>
-                <div className="h-[calc(100vh-145px)] rounded-lg border bg-card p-6 flex items-start">
-                  <ToolCard
-                    icon={previewBlobUrl || toolForm.icon || "Wrench"}
-                    name={toolForm.name || "Værktøjsnavn"}
-                    description={toolForm.short_description || "Beskrivelse af værktøjet..."}
-                    link={toolForm.link || "#"}
-                    category={toolForm.categories[0] || "Ingen kategori"}
-                    tags={toolForm.categories.slice(1)}
-                    onInfoClick={() => {}}
-                  />
+                {/* Existing Tools List */}
+                <div className="space-y-2">
+                  <h2 className="text-base font-semibold">Eksisterende værktøjer</h2>
+                  <ScrollArea className="h-[calc(100vh-430px)] rounded-lg border bg-card p-3">
+                    <div className="space-y-1.5">
+                      {tools.map((tool) => {
+                        const isSelected = editingTool?.name === tool.name;
+                        const isLongString = typeof tool.icon === 'string' && tool.icon.length > 50;
+                        const iconSrc = isLongString 
+                          ? (tool.icon.startsWith('data:') ? tool.icon : `data:image/png;base64,${tool.icon}`)
+                          : null;
+                        
+                        return (
+                          <div 
+                            key={tool.name}
+                            onClick={() => handleToolClick(tool)}
+                            className={`flex items-center gap-2.5 p-2.5 rounded-md cursor-pointer transition-all duration-150 border ${
+                              isSelected 
+                                ? 'bg-primary/10 border-primary shadow-sm' 
+                                : 'hover:bg-muted/50 border-transparent'
+                            }`}
+                          >
+                            {iconSrc ? (
+                              <img 
+                                src={iconSrc} 
+                                alt={tool.name}
+                                className="h-8 w-8 rounded object-cover flex-shrink-0"
+                              />
+                            ) : (
+                              <div className="h-8 w-8 rounded bg-primary/20 flex items-center justify-center flex-shrink-0">
+                                <span className="text-xs font-semibold text-primary">
+                                  {tool.name.charAt(0).toUpperCase()}
+                                </span>
+                              </div>
+                            )}
+                            <div className="flex-1 min-w-0">
+                              <p className={`text-sm font-medium truncate ${
+                                isSelected ? 'text-primary' : ''
+                              }`}>
+                                {tool.name}
+                              </p>
+                              {tool.categories && tool.categories.length > 0 && (
+                                <p className="text-xs text-muted-foreground truncate">
+                                  {tool.categories.slice(0, 2).join(", ")}
+                                  {tool.categories.length > 2 && ` +${tool.categories.length - 2}`}
+                                </p>
+                              )}
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </ScrollArea>
                 </div>
               </div>
 
-              {/* Create Tool Form - Right Column (Maximized) */}
+              {/* Right Column - Create Tool Form */}
               <div className="space-y-3" data-form-section="true">
                 <div className="flex items-center justify-between">
                   <h2 className="text-lg font-semibold">
