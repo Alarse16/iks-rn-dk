@@ -149,12 +149,69 @@ export const AddToolModal = ({
     }
   };
 
-  const handleAddCategory = () => {
-    if (newCategory.trim() && !categories.includes(newCategory.trim())) {
+  const handleAddCategory = async () => {
+    if (!newCategory.trim()) {
+      toast({
+        title: "Fejl",
+        description: "Kategorinavn må ikke være tomt.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (categories.includes(newCategory.trim())) {
+      toast({
+        title: "Fejl",
+        description: `Kategorien "${newCategory.trim()}" eksisterer allerede.`,
+        variant: "destructive",
+      });
+      return;
+    }
+
+    try {
+      const response = await fetch(`${API_BASE_URL}/kategorier`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ name: newCategory.trim() }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        
+        if (response.status === 409 || errorData.message?.includes('already exists')) {
+          toast({
+            title: "Fejl",
+            description: `Kategorien "${newCategory.trim()}" eksisterer allerede.`,
+            variant: "destructive",
+          });
+        } else {
+          toast({
+            title: "Fejl",
+            description: "Kunne ikke oprette kategorien. Prøv igen.",
+            variant: "destructive",
+          });
+        }
+        return;
+      }
+
+      toast({
+        title: "Succes",
+        description: "Kategorien blev oprettet!",
+      });
+
       onAddCategory(newCategory.trim());
       setFormData({ ...formData, category: newCategory.trim() });
       setNewCategory("");
       setShowNewCategoryInput(false);
+    } catch (error) {
+      console.error("Error creating category:", error);
+      toast({
+        title: "Fejl",
+        description: "Kunne ikke oprette kategorien. Prøv igen.",
+        variant: "destructive",
+      });
     }
   };
 
@@ -173,7 +230,7 @@ export const AddToolModal = ({
                 {showValidation && !formData.name && (
                   <TooltipProvider>
                     <Tooltip>
-                      <TooltipTrigger>
+                      <TooltipTrigger className="relative z-10">
                         <AlertCircle className="h-4 w-4 text-yellow-500" />
                       </TooltipTrigger>
                       <TooltipContent>
@@ -198,7 +255,7 @@ export const AddToolModal = ({
                 {showValidation && !formData.short_description && (
                   <TooltipProvider>
                     <Tooltip>
-                      <TooltipTrigger>
+                      <TooltipTrigger className="relative z-10">
                         <AlertCircle className="h-4 w-4 text-yellow-500" />
                       </TooltipTrigger>
                       <TooltipContent>
@@ -266,7 +323,7 @@ export const AddToolModal = ({
                 {showValidation && !formData.link && (
                   <TooltipProvider>
                     <Tooltip>
-                      <TooltipTrigger>
+                      <TooltipTrigger className="relative z-10">
                         <AlertCircle className="h-4 w-4 text-yellow-500" />
                       </TooltipTrigger>
                       <TooltipContent>

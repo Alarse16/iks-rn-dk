@@ -95,8 +95,9 @@ const Admin = () => {
                 ? [tool.category]
                 : [])
       }));
-      // Sort by newest first (reverse array to show latest tools at top)
-      setTools(toolsWithId.reverse());
+      // Sort alphabetically by name
+      toolsWithId.sort((a, b) => a.name.localeCompare(b.name, 'da'));
+      setTools(toolsWithId);
     } catch (error) {
       console.error("Error fetching tools:", error);
     } finally {
