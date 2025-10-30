@@ -4,5 +4,8 @@ services:
   pwa-frontend:
     image: "${HARBOR_REGISTRY}/${REPOSITORY}:${IMAGE_TAG}"
     ports:
-      - "4301:80"                # Expose Nginx on port 80
+      - "4301:80"                # HTTP (redirects to HTTPS)
+      - "4302:443"               # HTTPS
+    volumes:
+      - ./ssl:/etc/nginx/ssl:ro  # Mount SSL certificates
     restart: unless-stopped
