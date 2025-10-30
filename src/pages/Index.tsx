@@ -25,22 +25,31 @@ const Index = () => {
   const { toast } = useToast();
 
   useEffect(() => {
+    console.log("🔧 Env:", {
+      origin: window.location.origin,
+      API_BASE_URL,
+      online: navigator.onLine,
+    });
     fetchTools();
     fetchCategories();
   }, []);
 
   const fetchTools = async () => {
     try {
-      console.log("🔄 Starting to fetch tools from:", `${API_BASE_URL}/tools`);
+      const toolsUrl = `${API_BASE_URL}/tools`;
+      const t0 = performance.now();
+      console.log("🔄 Starting to fetch tools from:", toolsUrl);
       setIsLoading(true);
       
-      const response = await fetch(`${API_BASE_URL}/tools`, {
+      const response = await fetch(toolsUrl, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
         },
       });
       
+      const t1 = performance.now();
+      console.log("⏱️ Tools fetch duration:", Math.round(t1 - t0), "ms");
       console.log("📡 Response status:", response.status);
       console.log("📡 Response ok:", response.ok);
       console.log("📡 Response headers:", Object.fromEntries(response.headers.entries()));
@@ -91,9 +100,23 @@ const Index = () => {
 
   const fetchCategories = async () => {
     try {
-      const response = await fetch(`${API_BASE_URL}/kategorier`);
+      const catUrl = `${API_BASE_URL}/kategorier`;
+      const c0 = performance.now();
+      console.log("🔄 Starting to fetch categories from:", catUrl);
+      
+      const response = await fetch(catUrl, { method: 'GET' });
+      
+      const c1 = performance.now();
+      console.log("⏱️ Categories fetch duration:", Math.round(c1 - c0), "ms");
       
       if (!response.ok) {
+        const errorText = await response.text().catch(() => "<no body>");
+        console.error("❌ Categories not OK:", {
+          status: response.status,
+          statusText: response.statusText,
+          headers: Object.fromEntries(response.headers.entries()),
+          bodySnippet: errorText.slice(0, 500),
+        });
         throw new Error(`Failed to fetch categories: ${response.status}`);
       }
       
