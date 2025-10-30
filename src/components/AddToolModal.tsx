@@ -6,6 +6,8 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { AlertCircle, CheckCircle2 } from "lucide-react";
 
 // Hardcoded Base64 icon (your provided string)
 const DEFAULT_ICON = "image/png;base64,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";
@@ -43,10 +45,19 @@ export const AddToolModal = ({
   const [newCategory, setNewCategory] = useState("");
   const [showNewCategoryInput, setShowNewCategoryInput] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showValidation, setShowValidation] = useState(false);
+  const [showSuccess, setShowSuccess] = useState(false);
   const { toast } = useToast();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Validate required fields
+    if (!formData.name || !formData.short_description || !formData.link) {
+      setShowValidation(true);
+      return;
+    }
+    
     setIsSubmitting(true);
 
     try {
@@ -77,26 +88,33 @@ export const AddToolModal = ({
         throw new Error(error.error || "Failed to create tool");
       }
 
-      toast({
-        title: "Succes",
-        description: "Værktøjet blev oprettet.",
-      });
-
-      setFormData({
-        name: "",
-        short_description: "",
-        detailed_description: "",
-        target_audience: "",
-        documentation: "",
-        contact_info: "",
-        link: "",
-        category: preselectedCategory
-      });
-      setCustomIconUrl("");
-      setNewCategory("");
-      setShowNewCategoryInput(false);
-      onToolCreated();
-      onClose();
+      // Show success animation
+      setShowSuccess(true);
+      
+      setTimeout(() => {
+        toast({
+          title: "Succes",
+          description: "Værktøjet blev oprettet.",
+        });
+        
+        setFormData({
+          name: "",
+          short_description: "",
+          detailed_description: "",
+          target_audience: "",
+          documentation: "",
+          contact_info: "",
+          link: "",
+          category: preselectedCategory
+        });
+        setCustomIconUrl("");
+        setNewCategory("");
+        setShowNewCategoryInput(false);
+        setShowValidation(false);
+        setShowSuccess(false);
+        onToolCreated();
+        onClose();
+      }, 1500);
     } catch (error) {
       console.error("Error creating tool:", error);
       toast({
@@ -137,9 +155,32 @@ export const AddToolModal = ({
         </DialogHeader>
         
         <ScrollArea className="max-h-[calc(90vh-8rem)] pr-4">
-          <form onSubmit={handleSubmit} className="space-y-6">
+          <form onSubmit={handleSubmit} className="space-y-6 relative">
+            {/* Success Animation Overlay */}
+            {showSuccess && (
+              <div className="absolute inset-0 bg-background/95 flex items-center justify-center animate-fade-in z-50 rounded-lg">
+                <div className="text-center space-y-4 animate-scale-in">
+                  <CheckCircle2 className="h-16 w-16 text-green-500 mx-auto" />
+                  <p className="text-lg font-semibold">Værktøjet er tilføjet til listen!</p>
+                </div>
+              </div>
+            )}
             <div className="space-y-2">
-              <Label htmlFor="name">Navn *</Label>
+              <div className="flex items-center gap-2">
+                <Label htmlFor="name">Navn *</Label>
+                {showValidation && !formData.name && (
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger>
+                        <AlertCircle className="h-4 w-4 text-yellow-500" />
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p>Du skal udfylde dette felt</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                )}
+              </div>
               <Input
                 id="name"
                 value={formData.name}
@@ -150,7 +191,21 @@ export const AddToolModal = ({
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="short_description">Kort beskrivelse *</Label>
+              <div className="flex items-center gap-2">
+                <Label htmlFor="short_description">Kort beskrivelse *</Label>
+                {showValidation && !formData.short_description && (
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger>
+                        <AlertCircle className="h-4 w-4 text-yellow-500" />
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p>Du skal udfylde dette felt</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                )}
+              </div>
               <Textarea
                 id="short_description"
                 value={formData.short_description}
@@ -204,13 +259,28 @@ export const AddToolModal = ({
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="link">Link</Label>
+              <div className="flex items-center gap-2">
+                <Label htmlFor="link">Link *</Label>
+                {showValidation && !formData.link && (
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger>
+                        <AlertCircle className="h-4 w-4 text-yellow-500" />
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p>Du skal udfylde dette felt</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                )}
+              </div>
               <Input
                 id="link"
                 type="url"
                 value={formData.link}
                 onChange={(e) => setFormData({ ...formData, link: e.target.value })}
                 placeholder="Bruges til 'Åben værktøj' knappen - f.eks. https://værktøj.rn.dk"
+                required
               />
             </div>
 

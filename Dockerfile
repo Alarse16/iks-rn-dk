@@ -24,6 +24,6 @@ RUN find /usr/share/nginx/html/ -type d -print0 | xargs -0 chmod 755
 # Optional: SPA routing fix
 # COPY nginx.conf /etc/nginx/conf.d/default.conf
 # Expose port 80 for Nginx
-EXPOSE 81
+EXPOSE 80
 # Start Nginx
 CMD ["nginx", "-g", "daemon off;"]
