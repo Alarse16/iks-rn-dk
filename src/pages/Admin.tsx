@@ -95,7 +95,8 @@ const Admin = () => {
                 ? [tool.category]
                 : [])
       }));
-      setTools(toolsWithId);
+      // Sort by newest first (reverse array to show latest tools at top)
+      setTools(toolsWithId.reverse());
     } catch (error) {
       console.error("Error fetching tools:", error);
     } finally {
@@ -525,13 +526,31 @@ const Admin = () => {
                     {tools.map((tool) => (
                       <div
                         key={tool.id}
-                        className={`flex items-center justify-between p-3 rounded-lg border transition-colors cursor-pointer ${
+                        className={`flex items-center gap-3 p-3 rounded-lg border transition-colors cursor-pointer ${
                           editingTool?.name === tool.name 
                             ? 'bg-primary/10 border-primary' 
                             : 'bg-background hover:bg-accent/50'
                         }`}
                         onClick={() => handleToolClick(tool)}
                       >
+                        {/* Icon */}
+                        <div className="flex-shrink-0">
+                          {tool.icon && tool.icon.length > 100 ? (
+                            <img 
+                              src={`data:image/png;base64,${tool.icon}`} 
+                              alt={tool.name}
+                              className="w-10 h-10 rounded-lg object-cover border"
+                            />
+                          ) : (
+                            <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
+                              <span className="text-xs font-semibold text-primary">
+                                {tool.name.charAt(0).toUpperCase()}
+                              </span>
+                            </div>
+                          )}
+                        </div>
+                        
+                        {/* Content */}
                         <div className="flex-1 min-w-0">
                           <p className="font-medium text-sm truncate">{tool.name}</p>
                           <div className="flex gap-1 mt-1 flex-wrap">
@@ -542,6 +561,8 @@ const Admin = () => {
                             ))}
                           </div>
                         </div>
+                        
+                        {/* Delete Button */}
                         <Button
                           variant="ghost"
                           size="icon"
@@ -549,7 +570,7 @@ const Admin = () => {
                             e.stopPropagation();
                             confirmDelete('tool', tool.id, tool.name);
                           }}
-                          className="ml-2 h-8 w-8 text-destructive hover:text-destructive hover:bg-destructive/10"
+                          className="flex-shrink-0 h-8 w-8 text-destructive hover:text-destructive hover:bg-destructive/10"
                         >
                           <Trash2 className="h-4 w-4" />
                         </Button>
