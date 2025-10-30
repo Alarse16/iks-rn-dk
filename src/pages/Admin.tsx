@@ -640,17 +640,17 @@ const Admin = () => {
                   )}
                   <form onSubmit={handleCreateTool} className="space-y-3">
                     <div className="space-y-2">
-                      <Label htmlFor="tool-name">Navn * (maks. 40 tegn)</Label>
+                      <Label htmlFor="tool-name">Navn * (maks. 30 tegn)</Label>
                       <Input
                         id="tool-name"
                         value={toolForm.name}
-                        onChange={(e) => setToolForm({ ...toolForm, name: e.target.value.slice(0, 40) })}
+                        onChange={(e) => setToolForm({ ...toolForm, name: e.target.value.slice(0, 30) })}
                         placeholder="Værktøjets navn"
-                        maxLength={40}
+                        maxLength={30}
                         required
                       />
                       <p className="text-xs text-muted-foreground">
-                        {toolForm.name.length}/40 tegn
+                        {toolForm.name.length}/30 tegn
                       </p>
                     </div>
 
