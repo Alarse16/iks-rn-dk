@@ -22,7 +22,7 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 
-const API_BASE_URL = "/api";
+const API_BASE_URL = "https://iks.rn.dk/api";
 
 interface AdminModalProps {
   isOpen: boolean;

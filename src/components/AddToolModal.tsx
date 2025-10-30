@@ -21,7 +21,7 @@ interface AddToolModalProps {
   onToolCreated: () => void;
 }
 
-const API_BASE_URL = "/api";
+const API_BASE_URL = "https://iks.rn.dk/api";
 
 export const AddToolModal = ({ 
   isOpen, 
