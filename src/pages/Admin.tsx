@@ -518,8 +518,8 @@ const Admin = () => {
 
           {/* Tools Tab */}
           <TabsContent value="tools" className="space-y-0 h-full">
-            <div className="grid grid-cols-[300px,1fr] gap-4 h-full">
-              {/* Tool List - Compact */}
+            <div className="grid grid-cols-[280px,380px,1fr] gap-4 h-full">
+              {/* Existing Tools List - Left Column */}
               <div className="space-y-2">
                 <h2 className="text-base font-semibold">Eksisterende værktøjer</h2>
                 <ScrollArea className="h-[calc(100vh-145px)] rounded-lg border bg-card p-3">
@@ -586,7 +586,23 @@ const Admin = () => {
                 </ScrollArea>
               </div>
 
-              {/* Create Tool Form - Maximized */}
+              {/* Preview - Middle Column */}
+              <div className="space-y-2">
+                <h2 className="text-base font-semibold">Forhåndsvisning</h2>
+                <div className="h-[calc(100vh-145px)] rounded-lg border bg-card p-6 flex items-start">
+                  <ToolCard
+                    icon={previewBlobUrl || toolForm.icon || "Wrench"}
+                    name={toolForm.name || "Værktøjsnavn"}
+                    description={toolForm.short_description || "Beskrivelse af værktøjet..."}
+                    link={toolForm.link || "#"}
+                    category={toolForm.categories[0] || "Ingen kategori"}
+                    tags={toolForm.categories.slice(1)}
+                    onInfoClick={() => {}}
+                  />
+                </div>
+              </div>
+
+              {/* Create Tool Form - Right Column (Maximized) */}
               <div className="space-y-3" data-form-section="true">
                 <div className="flex items-center justify-between">
                   <h2 className="text-lg font-semibold">
@@ -605,24 +621,7 @@ const Admin = () => {
                   )}
                 </div>
                 
-                <ScrollArea className="h-[calc(100vh-175px)] rounded-lg border bg-card">
-                  {/* Sticky Preview at Top */}
-                  <div className="sticky top-0 z-10 bg-card border-b p-6">
-                    <p className="text-xs font-medium mb-3 text-muted-foreground">Forhåndsvisning:</p>
-                    <div className="max-w-md">
-                      <ToolCard
-                        icon={previewBlobUrl || toolForm.icon || "Wrench"}
-                        name={toolForm.name || "Værktøjsnavn"}
-                        description={toolForm.short_description || "Beskrivelse af værktøjet..."}
-                        link={toolForm.link || "#"}
-                        category={toolForm.categories[0] || "Ingen kategori"}
-                        tags={toolForm.categories.slice(1)}
-                        onInfoClick={() => {}}
-                      />
-                    </div>
-                  </div>
-                  
-                  <div className="p-6">
+                <ScrollArea className="h-[calc(100vh-145px)] rounded-lg border bg-card p-6">
                   {/* Inline Message Display */}
                   {toolFormMessage && (
                     <div className={`p-4 rounded-lg mb-4 ${
@@ -779,7 +778,6 @@ const Admin = () => {
                       )}
                     </div>
                   </form>
-                  </div>
                 </ScrollArea>
               </div>
             </div>
