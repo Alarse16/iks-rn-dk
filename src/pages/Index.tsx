@@ -287,7 +287,7 @@ const Index = () => {
       </section>
 
       {/* Admin Button at Bottom */}
-      <div className="container mx-auto px-4 py-8 flex justify-center">
+      <div className="container mx-auto px-4 py-8 flex justify-end">
         <Button 
           onClick={handleOpenAdmin} 
           size="lg" 
