@@ -286,15 +286,17 @@ const Index = () => {
         )}
       </section>
 
-      {/* Floating Admin Button */}
-      <Button 
-        onClick={handleOpenAdmin} 
-        size="lg" 
-        className="fixed bottom-6 right-6 z-50 gap-2 shadow-2xl hover:shadow-[var(--shadow-card-hover)]"
-      >
-        <Plus className="h-5 w-5" />
-        Administrer værktøjer
-      </Button>
+      {/* Admin Button at Bottom */}
+      <div className="container mx-auto px-4 py-8 flex justify-center">
+        <Button 
+          onClick={handleOpenAdmin} 
+          size="lg" 
+          className="gap-2 shadow-2xl hover:shadow-[var(--shadow-card-hover)]"
+        >
+          <Plus className="h-5 w-5" />
+          Administrer værktøjer
+        </Button>
+      </div>
 
       {/* Tool Modal */}
       <ToolModal
