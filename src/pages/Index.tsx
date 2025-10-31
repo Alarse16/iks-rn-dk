@@ -188,7 +188,7 @@ const Index = () => {
     
     const toolCategories = tool.categories || [];
     const matchesCategory = selectedCategories.length === 0 || 
-      selectedCategories.some(cat => toolCategories.includes(cat));
+      selectedCategories.every(cat => toolCategories.includes(cat));
     
     return matchesSearch && matchesCategory;
   });
@@ -215,10 +215,6 @@ const Index = () => {
               <p className="text-xl font-medium text-foreground/90">Infrastruktur & Klient Services</p>
             </div>
             <div className="flex items-center gap-3">
-              <Button onClick={handleOpenAdmin} size="lg" className="gap-2 shadow-[var(--shadow-card)]">
-                <Plus className="h-5 w-5" />
-                Administrer værktøjer
-              </Button>
               <ThemeToggle />
             </div>
           </div>
@@ -286,6 +282,16 @@ const Index = () => {
           </div>
         )}
       </section>
+
+      {/* Floating Admin Button */}
+      <Button 
+        onClick={handleOpenAdmin} 
+        size="lg" 
+        className="fixed bottom-6 right-6 z-50 gap-2 shadow-2xl hover:shadow-[var(--shadow-card-hover)]"
+      >
+        <Plus className="h-5 w-5" />
+        Administrer værktøjer
+      </Button>
 
       {/* Footer */}
       <footer className="border-t-2 border-border/50 bg-card/50 backdrop-blur-sm mt-16">
