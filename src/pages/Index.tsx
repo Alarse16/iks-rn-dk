@@ -121,9 +121,10 @@ const Index = () => {
       }
       
       const data = await response.json();
-      // Add "Alle" as first option for frontend filtering
-      setCategories(data);
-      console.log("✅ Successfully loaded categories:", data);
+      // Sort categories alphabetically
+      const sortedCategories = [...data].sort((a, b) => a.localeCompare(b, 'da'));
+      setCategories(sortedCategories);
+      console.log("✅ Successfully loaded categories:", sortedCategories);
     } catch (error) {
       console.error("❌ Error fetching categories:", error);
       toast({
@@ -182,16 +183,18 @@ const Index = () => {
     navigate("/admin");
   };
 
-  const filteredTools = tools.filter((tool) => {
-    const matchesSearch = tool.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      tool.short_description.toLowerCase().includes(searchQuery.toLowerCase());
-    
-    const toolCategories = tool.categories || [];
-    const matchesCategory = selectedCategories.length === 0 || 
-      selectedCategories.every(cat => toolCategories.includes(cat));
-    
-    return matchesSearch && matchesCategory;
-  });
+  const filteredTools = tools
+    .filter((tool) => {
+      const matchesSearch = tool.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        tool.short_description.toLowerCase().includes(searchQuery.toLowerCase());
+      
+      const toolCategories = tool.categories || [];
+      const matchesCategory = selectedCategories.length === 0 || 
+        selectedCategories.every(cat => toolCategories.includes(cat));
+      
+      return matchesSearch && matchesCategory;
+    })
+    .sort((a, b) => a.name.localeCompare(b.name, 'da'));
 
   const handleCategoryToggle = (category: string) => {
     setSelectedCategories(prev => 
@@ -296,20 +299,10 @@ const Index = () => {
       {/* Footer */}
       <footer className="border-t-2 border-border/50 bg-card/50 backdrop-blur-sm mt-16">
         <div className="container mx-auto px-4 py-10">
-          <div className="text-center text-sm text-muted-foreground space-y-3">
+          <div className="text-center text-sm text-muted-foreground">
             <p className="text-base">
               <strong className="text-foreground font-bold text-lg">Infrastruktur og Klient Platform</strong>
               <span className="block mt-1 text-muted-foreground">Region Nordjylland</span>
-            </p>
-            <p className="max-w-xl mx-auto">
-              Har du spørgsmål eller behov for support? Kontakt IT-support på{" "}
-              <a href="tel:99321100" className="text-primary hover:text-primary-glow font-medium transition-colors duration-200 hover:underline">
-                9932 1100
-              </a>
-              {" "}eller{" "}
-              <a href="mailto:it-support@rn.dk" className="text-primary hover:text-primary-glow font-medium transition-colors duration-200 hover:underline">
-                it-support@rn.dk
-              </a>
             </p>
           </div>
         </div>
