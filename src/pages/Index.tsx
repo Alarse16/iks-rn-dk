@@ -296,18 +296,6 @@ const Index = () => {
         Administrer værktøjer
       </Button>
 
-      {/* Footer */}
-      <footer className="border-t-2 border-border/50 bg-card/50 backdrop-blur-sm mt-16">
-        <div className="container mx-auto px-4 py-10">
-          <div className="text-center text-sm text-muted-foreground">
-            <p className="text-base">
-              <strong className="text-foreground font-bold text-lg">Infrastruktur og Klient Platform</strong>
-              <span className="block mt-1 text-muted-foreground">Region Nordjylland</span>
-            </p>
-          </div>
-        </div>
-      </footer>
-
       {/* Tool Modal */}
       <ToolModal
         isOpen={isModalOpen}
