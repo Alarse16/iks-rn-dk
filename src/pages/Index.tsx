@@ -22,6 +22,7 @@ const Index = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [currentTheme, setCurrentTheme] = useState<"light" | "dark">("light");
   const { toast } = useToast();
 
   useEffect(() => {
@@ -32,6 +33,31 @@ const Index = () => {
     });
     fetchTools();
     fetchCategories();
+  }, []);
+
+  useEffect(() => {
+    // Initial theme detection
+    const savedTheme = localStorage.getItem("theme") as "light" | "dark" | null;
+    const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+    const initialTheme = savedTheme || (prefersDark ? "dark" : "light");
+    setCurrentTheme(initialTheme);
+
+    // Watch for theme changes when user clicks ThemeToggle
+    const observer = new MutationObserver((mutations) => {
+      mutations.forEach((mutation) => {
+        if (mutation.attributeName === "class") {
+          const isDark = document.documentElement.classList.contains("dark");
+          setCurrentTheme(isDark ? "dark" : "light");
+        }
+      });
+    });
+
+    observer.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ["class"]
+    });
+
+    return () => observer.disconnect();
   }, []);
 
   const fetchTools = async () => {
@@ -211,7 +237,7 @@ const Index = () => {
         <div className="container mx-auto px-4 py-3">
           <div className="relative flex items-center justify-between gap-4">
             <div className="flex items-center p-2">
-              <img src="/rn-logo.svg" alt="Region Nordjylland" className="h-24" />
+              <img src={currentTheme === "dark" ? "/admin/RN.png" : "/admin/RNDARK.png"} alt="Region Nordjylland" className="h-24" />
             </div>
             <div className="absolute left-1/2 -translate-x-1/2 text-center">
               <h1 className="text-4xl font-bold tracking-tight text-foreground">IKS.rn.dk</h1>
