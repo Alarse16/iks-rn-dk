@@ -3,7 +3,6 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link id="favicon" rel="icon" href="/rn-logo-circle.png" type="image/png" />
     <title>IT Værktøjskatalog - Region Nordjylland</title>
     <meta name="description" content="Selvbetjent katalog over IT-værktøjer fra Infrastruktur og Klient Platform i Region Nordjylland. Find dokumentation, support og information om alle tilgængelige værktøjer." />
     <meta name="author" content="Region Nordjylland - Infrastruktur og Klient Platform" />
@@ -18,23 +17,36 @@
     <meta name="twitter:site" content="@lovable_dev" />
     <meta name="twitter:image" content="https://lovable.dev/opengraph-image-p98pqg.png" />
     
+    <!-- Favicon with dynamic theme support -->
+    <link rel="icon" media="(prefers-color-scheme: light)" href="/admin/RNDARK.png" type="image/png" />
+    <link rel="icon" media="(prefers-color-scheme: dark)" href="/admin/RN.png" type="image/png" />
+    <link rel="shortcut icon" href="/admin/RNDARK.png" type="image/png" />
+    
     <script>
-      function setFaviconForColorScheme() {
-        const favicon = document.getElementById('favicon');
-        const isDarkMode = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-   
-        if (isDarkMode) {
-          favicon.href = '/admin/RN.png';
-        } else {
-          favicon.href = '/admin/RNDARK.png';
+      (function() {
+        function updateFavicon() {
+          const isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+          const mode = isDark ? 'dark' : 'light';
+          const faviconPath = isDark ? '/admin/RN.png' : '/admin/RNDARK.png';
+          
+          // Remove all existing favicon links
+          const existingLinks = document.querySelectorAll('link[rel*="icon"]');
+          existingLinks.forEach(link => link.remove());
+          
+          // Add new favicon with cache-busting
+          const link = document.createElement('link');
+          link.rel = 'icon';
+          link.type = 'image/png';
+          link.href = faviconPath + '?mode=' + mode + '&t=' + Date.now();
+          document.head.appendChild(link);
         }
-      }
-   
-      // Run on page load
-      setFaviconForColorScheme();
-   
-      // Optional: Listen for changes (if user switches OS/browser theme while page is open)
-      window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', setFaviconForColorScheme);
+        
+        // Update on load
+        updateFavicon();
+        
+        // Update on theme change
+        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', updateFavicon);
+      })();
     </script>
   </head>
 
